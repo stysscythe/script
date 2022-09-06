@@ -80,39 +80,7 @@ end)
          CreditsSection:NewLabel("Discord link is auto copied btw.")
          CreditsSection:NewLabel("Shoutout to my friend for helping!")
 
-         local Tab = Window:NewTab("Updates")
-         local UpdatesSection = Tab:NewSection("Update Log")
-         UpdatesSection:NewButton(
-         "Print Update, Identifys Executor (Press F9 to see)",
-         "Prints Update log",
-         function()
-                  print("You Are Running PriWare - V1.20 | Public")
-                  print("       New Update")
-                  print(" ------------------------")
-                  print("Added a day, month, year detector. (skidded from jailbird.gg)")
-                  print("new optimized hitbox expander to load faster")
-                  print("because hitbox expander is now loading faster this line H̶i̶t̶b̶o̶x̶ ̶m̶i̶g̶h̶t̶ ̶t̶a̶k̶e̶ ̶a̶ ̶w̶h̶i̶l̶e̶ ̶t̶o̶ ̶l̶o̶a̶d̶ ̶o̶n̶ ̶S̶y̶n̶a̶p̶s̶e̶ ̶X̶ ̶t̶h̶o̶u̶g̶h̶ is now useless since its fine now lol")
-                  print("made it so hitbox expander loads when you press hibox expander in combat section so you arent forced 👍")
-                  print("omg new color picker gui sdjhauidhaejbfdnas")
-				  print("   Previous Update")
-                  print("------------------------")
-                  print("Your Current executor is "..identifyexecutor().."")
-                  print("Added a Executor Identifier (to check if executors can execute PriWare ")
-                  print("--i forgor 💀💀💀💀")
-                  print("Added a Nametag Changer ")
-                  print("Reversed Theme change.")
-                  print("Fixed deleted pastebins loadstrings.")
-                  print("Optimized PriWare when executing.")
-                  print("H̶i̶t̶b̶o̶x̶ ̶m̶i̶g̶h̶t̶ ̶t̶a̶k̶e̶ ̶a̶ ̶w̶h̶i̶l̶e̶ ̶t̶o̶ ̶l̶o̶a̶d̶ ̶o̶n̶ ̶S̶y̶n̶a̶p̶s̶e̶ ̶X̶ ̶t̶h̶o̶u̶g̶h̶")
-                  print("Added Tiger Admin. (suggested by another script dev")
-                  print("Cancelled Update (cause it doesnt work")
-                  print(" --------- ")
-                  print("Theme Picker")
-
-            
-         end
-         )
-
+     
          local Tab = Window:NewTab("Ui")
          local UiSection = Tab:NewSection("Toggle")
          UiSection:NewKeybind(
@@ -199,13 +167,13 @@ end)
          )
 
 CombatSection:NewButton("Hitbox Expander", "if you suck at aiming", function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RectangularObject/boblox/main/Other/Universal%20Hitbox%20Extender.lua", true))()
+loadstring(game:HttpGet('https://garfieldscripts.xyz/cheatx/scripts/main.lua'))()
         
                 game.StarterGui:SetCore(
          "SendNotification",
          {
                   Title = "sup",
-                  Text = "Hitbox loaded in " .. tostring(tick() - start) .. " ms new one that is now optimized (dont use esp)",
+                  Text = "Hitbox loaded in " .. tostring(tick() - start) .. " ms old one",
                   Icon = "",
                   Duration = 10,
                   Button1 = "k",
@@ -556,7 +524,7 @@ local start = tick()
         if player then
           local Library =
          loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-         local Window = Library.CreateLib("PriWare's Teleports - Hydro made this ", colors)
+         local Window = Library.CreateLib("Core's Teleports - core is tired", colors)
 
           local Tab = Window:NewTab("Main")
          local MainSection = Tab:NewSection("main i guess")
