@@ -33,9 +33,6 @@ local start = tick()
                   Callback = NotificationBindable
          }
          )
-          local Library =
-         loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-         local Window = Library.CreateLib("CoreHub - V1 | Public", colors)
 
           local Tab = Window:NewTab("Main")
          local MainSection = Tab:NewSection("main i guess")
