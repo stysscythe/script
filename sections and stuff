@@ -1,14 +1,8 @@
-    			local Players = game:GetService("Players"):GetPlayers()
+
+local Players = game:GetService("Players"):GetPlayers()
 
 local PlayerCount = #Players -- # means number/length of ......
 
-         local colors = {
-    SchemeColor = Color3.fromRGB(2, 48, 107),
-    Background = Color3.fromRGB(7, 15, 26),
-    Header = Color3.fromRGB(16, 27, 41),
-    TextColor = Color3.fromRGB(255,255,255),
-    ElementColor = Color3.fromRGB(20, 20, 20)
-}
 
 local start = tick()
 
