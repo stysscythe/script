@@ -1,3 +1,5 @@
+    			local Players = game:GetService("Players"):GetPlayers()
+
 local PlayerCount = #Players -- # means number/length of ......
 
          local colors = {
@@ -652,10 +654,9 @@ end
          )
          local Tab = Window:NewTab("Theme")
          local ThemeSection = Tab:NewSection("Themes")
-         ThemeSection:NewButton(
-         "Dark Theme",
-         "",
-         function()
+         ThemeSection:NewButton("","",
+        function()
             Library:ToggleUI()
-         end
-         )
+            
+        end
+        )
