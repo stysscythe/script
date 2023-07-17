@@ -65,7 +65,7 @@ function Lib.Window(Title)
 	--Properties:
 
 	UiLib.Name = "UiLib"
-	UiLib.Parent = game.CoreGui
+	UiLib.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 	UiLib.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	Main.Name = "Main"
@@ -114,6 +114,40 @@ function Lib.Window(Title)
 	UIListLayout.Padding = UDim.new(0, 19)
 	
 	Lib:Drag(TopBar,Main)
+	
+	function Lib:ToggleUI()
+		if UiLib.Enabled then
+			local ClickSound = 	Instance.new("Sound")
+
+			ClickSound.Parent = UiLib
+			ClickSound.SoundId = "rbxassetid://552900451"
+			ClickSound.Volume = 2 
+			ClickSound.Pitch = 1.2
+
+			UiLib.Enabled = false
+
+			ClickSound:Play()
+			
+			wait(0.5)
+
+			ClickSound:Destroy()
+		else
+			local ClickSound = 	Instance.new("Sound")
+
+			ClickSound.Parent = UiLib
+			ClickSound.SoundId = "rbxassetid://552900451"
+			ClickSound.Volume = 2 
+			ClickSound.Pitch = 1
+			
+			UiLib.Enabled = true
+			
+			ClickSound:Play()
+			
+			wait(0.5)
+			
+			ClickSound:Destroy()
+		end
+	end
 	
 	TopBar.Name = "TopBar"
 	TopBar.Parent = Main
@@ -190,7 +224,7 @@ function Lib.Window(Title)
 		TabCorner.Name = "TabCorner"
 		TabCorner.Parent = TabSwitcher
 
-		TabContent.Name = "TabContent"
+		TabContent.Name = TabTitle.."'s Content"
 		TabContent.Parent = ContentHolder
 		TabContent.Active = true
 		TabContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -250,7 +284,7 @@ function Lib.Window(Title)
 		local Content = {}
 
 		function Content.CreateButton(BtnTitle, callback)
-			BtnTitle = BtnTitle or "Print"
+			BtnTitle = BtnTitle or "Button"
 			callback = callback or function() end
 
 			local ButtonFrame = Instance.new("Frame")	
@@ -363,7 +397,7 @@ function Lib.Window(Title)
 		end
 
 		function Content.CreateSlider(SliderTitle, minvalue, maxvalue, callback)
-			SliderTitle = SliderTitle or "Walkspeed"
+			SliderTitle = SliderTitle or "Slider"
 			minvalue = minvalue or 16
 			maxvalue = maxvalue or 100
 			callback = callback or function() end
@@ -514,7 +548,7 @@ function Lib.Window(Title)
 		end
 		
 		function Content.CreateToggle(TogTXT, callback)
-			TogTXT = TogTXT or "Inf Jump"
+			TogTXT = TogTXT or "Toggle"
 			callback = callback or function() end
 			local toggled = false
 			
@@ -681,11 +715,469 @@ function Lib.Window(Title)
 					toggled = false
 				end
 			pcall(callback, toggled)
-		  end)
+			end)
 		end
 		
+		function Content.CreateKeybind(KeybindTitle, first, callback)
+			KeybindTitle = KeybindTitle or "Keybind"
+			local oldKey = first.Name
+			callback = callback or function() end
+
+			local KeybindFrame = Instance.new("Frame")
+			local KeybindCorner = Instance.new("UICorner")
+			local KeybindLabel = Instance.new("TextLabel")
+			local KeybindImage = Instance.new("ImageLabel")
+			local Input = Instance.new("TextLabel")
+			local ToggleTrigger = Instance.new("TextButton")
+			local KeybindCorner_2 = Instance.new("UICorner")
+
+			KeybindFrame.Name = "KeybindFrame"
+			KeybindFrame.Parent = TabContent
+			KeybindFrame.Active = true
+			KeybindFrame.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			KeybindFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			KeybindFrame.BorderSizePixel = 0
+			KeybindFrame.ClipsDescendants = true
+			KeybindFrame.Position = UDim2.new(0.0983050838, 0, 0.581818163, 0)
+			KeybindFrame.Selectable = true
+			KeybindFrame.Size = UDim2.new(0, 237, 0, 37)
+			KeybindFrame.ZIndex = 4
+
+			KeybindCorner.Name = "KeybindCorner"
+			KeybindCorner.Parent = KeybindFrame
+
+			KeybindLabel.Name = "KeybindLabel"
+			KeybindLabel.Parent = KeybindFrame
+			KeybindLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			KeybindLabel.BackgroundTransparency = 1.000
+			KeybindLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			KeybindLabel.BorderSizePixel = 0
+			KeybindLabel.Position = UDim2.new(0.185654014, 0, 0.0540540516, 0)
+			KeybindLabel.Size = UDim2.new(0, 96, 0, 32)
+			KeybindLabel.ZIndex = 5
+			KeybindLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+			KeybindLabel.Text = KeybindTitle
+			KeybindLabel.TextColor3 = Color3.fromRGB(227, 227, 227)
+			KeybindLabel.TextSize = 26.000
+			KeybindLabel.TextWrapped = true
+			KeybindLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			KeybindImage.Name = "KeybindImage"
+			KeybindImage.Parent = KeybindFrame
+			KeybindImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			KeybindImage.BackgroundTransparency = 1.000
+			KeybindImage.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			KeybindImage.BorderSizePixel = 0
+			KeybindImage.Position = UDim2.new(0.0590717271, -5, 0.241554052, -2)
+			KeybindImage.Size = UDim2.new(0, 22, 0, 22)
+			KeybindImage.ZIndex = 5
+			KeybindImage.Image = "rbxassetid://3926305904"
+			KeybindImage.ImageColor3 = Color3.fromRGB(228, 197, 255)
+			KeybindImage.ImageRectOffset = Vector2.new(364, 284)
+			KeybindImage.ImageRectSize = Vector2.new(36, 36)
+
+			Input.Name = "Input"
+			Input.Parent = KeybindFrame
+			Input.BackgroundColor3 = Color3.fromRGB(82, 82, 122)
+			Input.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Input.BorderSizePixel = 0
+			Input.ClipsDescendants = true
+			Input.Position = UDim2.new(0.816, 0, 0.092, 0)
+			Input.Size = UDim2.new(0, 29, 0, 29)
+			Input.ZIndex = 5
+			Input.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+			Input.Text = oldKey
+			Input.TextColor3 = Color3.fromRGB(227, 227, 227)
+			Input.TextScaled = true
+			Input.TextWrapped = true
+
+			KeybindCorner_2.CornerRadius = UDim.new(0, 5)
+			KeybindCorner_2.Name = "KeybindCorner"
+			KeybindCorner_2.Parent = Input
+
+			ToggleTrigger.Name = "ToggleTrigger"
+			ToggleTrigger.Parent = KeybindFrame
+			ToggleTrigger.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			ToggleTrigger.BackgroundTransparency = 1.000
+			ToggleTrigger.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ToggleTrigger.BorderSizePixel = 0
+			ToggleTrigger.ClipsDescendants = true
+			ToggleTrigger.Size = UDim2.new(0, 237, 0, 34)
+			ToggleTrigger.ZIndex = 5
+			ToggleTrigger.Text = ""
+			ToggleTrigger.TextTransparency = 1.000
+
+			ToggleTrigger.MouseButton1Click:Connect(function()
+				Input.Text = ". . ."
+				local a, b = game:GetService('UserInputService').InputBegan:wait();
+				if a.KeyCode.Name ~= "Unknown" then
+					Input.Text = a.KeyCode.Name
+					oldKey = a.KeyCode.Name;
+				end
+			end)
+
+			game:GetService("UserInputService").InputBegan:connect(function(current, ok) 
+				if not ok then 
+					if current.KeyCode.Name == oldKey then 
+						callback()
+					end
+				end
+			end)
+			
+
+		end
+		
+		function Content.CreateTextbox(TextboxTitle, callback)
+			TextboxTitle = TextboxTitle or "Textbox"
+			callback = callback or function() end
+			
+			local TextboxFrame = Instance.new("Frame")
+			local TextboxCorner = Instance.new("UICorner")
+			local TextboxLabel = Instance.new("TextLabel")
+			local PencilImage = Instance.new("ImageLabel")
+			local Input = Instance.new("TextBox")
+			local KeybindCorner = Instance.new("UICorner")
+
+			--Properties:
+
+			TextboxFrame.Name = "TextboxFrame"
+			TextboxFrame.Parent = TabContent
+			TextboxFrame.Active = true
+			TextboxFrame.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			TextboxFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextboxFrame.BorderSizePixel = 0
+			TextboxFrame.ClipsDescendants = true
+			TextboxFrame.Position = UDim2.new(0.0983050838, 0, 0.581818163, 0)
+			TextboxFrame.Selectable = true
+			TextboxFrame.Size = UDim2.new(0, 237, 0, 57)
+			TextboxFrame.ZIndex = 4
+
+			TextboxCorner.Name = "TextboxCorner"
+			TextboxCorner.Parent = TextboxFrame
+
+			TextboxLabel.Name = "TextboxLabel"
+			TextboxLabel.Parent = TextboxFrame
+			TextboxLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextboxLabel.BackgroundTransparency = 1.000
+			TextboxLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextboxLabel.BorderSizePixel = 0
+			TextboxLabel.Position = UDim2.new(0.186, 0, 0.054, -1)
+			TextboxLabel.Size = UDim2.new(0, 160, 0, 32)
+			TextboxLabel.ZIndex = 5
+			TextboxLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+			TextboxLabel.Text = TextboxTitle
+			TextboxLabel.TextColor3 = Color3.fromRGB(227, 227, 227)
+			TextboxLabel.TextSize = 26.000
+			TextboxLabel.TextWrapped = true
+			TextboxLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			PencilImage.Name = "PencilImage"
+			PencilImage.Parent = TextboxFrame
+			PencilImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			PencilImage.BackgroundTransparency = 1.000
+			PencilImage.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			PencilImage.BorderSizePixel = 0
+			PencilImage.Position = UDim2.new(0.059, -5, 0.171, -2)
+			PencilImage.Size = UDim2.new(0, 22, 0, 22)
+			PencilImage.ZIndex = 5
+			PencilImage.Image = "rbxassetid://3926305904"
+			PencilImage.ImageColor3 = Color3.fromRGB(228, 197, 255)
+			PencilImage.ImageRectOffset = Vector2.new(324, 604)
+			PencilImage.ImageRectSize = Vector2.new(36, 36)
+
+			Input.Name = "Input"
+			Input.Parent = TextboxFrame
+			Input.BackgroundColor3 = Color3.fromRGB(82, 82, 122)
+			Input.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Input.BorderSizePixel = 0
+			Input.ClipsDescendants = true
+			Input.Position = UDim2.new(0.131, 0, 0.605, 0)
+			Input.Size = UDim2.new(0, 173, 0, 18)
+			Input.ZIndex = 5
+			Input.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+			Input.PlaceholderText = "Type Here"
+			Input.Text = ""
+			Input.TextColor3 = Color3.fromRGB(227, 227, 227)
+			Input.TextScaled = true
+			Input.TextSize = 23.000
+			Input.TextWrapped = true
+
+			KeybindCorner.CornerRadius = UDim.new(0, 5)
+			KeybindCorner.Name = "KeybindCorner"
+			KeybindCorner.Parent = Input
+			
+			Input.FocusLost:Connect(function(EnterPressed)
+				if not EnterPressed then 
+					return
+				else
+					callback(Input.Text)
+					wait(0.18)
+					Input.Text = ""  
+				end
+			end)
+		end
+		
+		function Content.CreateDropdown(DropdownTitle, list, callback)
+			callback = callback or function() end
+			DropdownTitle = DropdownTitle or "Dropdown"
+			list = list or {}
+			local IsDropped = false
+			local DropYSize = 134
+			local NormalYSize = 34
+			
+			local DropdownFrame = Instance.new("Frame")
+			local DropdownCorner = Instance.new("UICorner")
+			local DropdownLabel = Instance.new("TextLabel")		
+			local DropdownImage = Instance.new("ImageLabel")
+			local DropdownTrigger = Instance.new("TextButton")
+			local DropdownContainer = Instance.new("ScrollingFrame")
+			local ContentLayout = Instance.new("UIListLayout")
+			local ContentPadding = Instance.new("UIPadding")
+
+
+			--Properties:
+
+			DropdownFrame.Name = "DropdownFrame"
+			DropdownFrame.Parent = TabContent
+			DropdownFrame.Active = true
+			DropdownFrame.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			DropdownFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DropdownFrame.BorderSizePixel = 0
+			DropdownFrame.ClipsDescendants = true
+			DropdownFrame.Position = UDim2.new(0.0983050838, 0, 0.465454549, 0)
+			DropdownFrame.Selectable = true
+			DropdownFrame.Size = UDim2.new(0, 237, 0, NormalYSize)
+			DropdownFrame.ZIndex = 4
+
+			DropdownCorner.Name = "DropdownCorner"
+			DropdownCorner.Parent = DropdownFrame
+
+			DropdownLabel.Name = "DropdownLabel"
+			DropdownLabel.Parent = DropdownFrame
+			DropdownLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			DropdownLabel.BackgroundTransparency = 1.000
+			DropdownLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DropdownLabel.BorderSizePixel = 0
+			DropdownLabel.Position = UDim2.new(0.151, 0, 0.037, 0)
+			DropdownLabel.Size = UDim2.new(0, 193, 0, 32)
+			DropdownLabel.ZIndex = 5
+			DropdownLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+			DropdownLabel.Text = DropdownTitle
+			DropdownLabel.TextColor3 = Color3.fromRGB(227, 227, 227)
+			DropdownLabel.TextSize = 26.000
+			DropdownLabel.TextWrapped = true
+			DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+	
+			DropdownImage.Name = "DropdownImage"
+			DropdownImage.Parent = DropdownFrame
+			DropdownImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			DropdownImage.BackgroundTransparency = 1.000
+			DropdownImage.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DropdownImage.BorderSizePixel = 0
+			DropdownImage.Position = UDim2.new(0.03, 0, 0.196, -1)
+			DropdownImage.Size = UDim2.new(0, 22, 0, 22)
+			DropdownImage.ZIndex = 5
+			DropdownImage.Image = "rbxassetid://3926305904"
+			DropdownImage.ImageColor3 = Color3.fromRGB(228, 197, 255)
+			DropdownImage.ImageRectOffset = Vector2.new(644, 364)
+			DropdownImage.ImageRectSize = Vector2.new(36, 36)
+			
+			DropdownTrigger.Name = "DropdownTrigger"
+			DropdownTrigger.Parent = DropdownFrame
+			DropdownTrigger.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			DropdownTrigger.BackgroundTransparency = 1.000
+			DropdownTrigger.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DropdownTrigger.BorderSizePixel = 0
+			DropdownTrigger.ClipsDescendants = true
+			DropdownTrigger.Size = UDim2.new(0, 237, 0, 32)
+			DropdownTrigger.ZIndex = 5
+			DropdownTrigger.Text = ""
+			DropdownTrigger.TextTransparency = 1.000
+			DropdownTrigger.MouseButton1Click:Connect(function()
+				if IsDropped == false then 
+					local ClickSound = 	Instance.new("Sound")
+
+					ClickSound.Parent = UiLib
+					ClickSound.SoundId = "rbxassetid://552900451"
+					ClickSound.Volume = 2 
+					ClickSound.Pitch = 1.2
+					
+					DropdownImage.Position = UDim2.new(0.03, 0, 0.05, -1)
+					DropdownLabel.Position = UDim2.new(0.151, 0, 0.01, 0)
+					DropdownFrame.Size = UDim2.new(0, 237, 0, DropYSize)
+					DropdownContainer.Visible = true
+					ClickSound:Play()
+					IsDropped = true
+				else
+					local ClickSound = 	Instance.new("Sound")
+
+					ClickSound.Parent = UiLib
+					ClickSound.SoundId = "rbxassetid://552900451"
+					ClickSound.Volume = 2 
+					ClickSound.Pitch = 1
+
+					DropdownImage.Position = UDim2.new(0.03, 0, 0.196, -1)
+					DropdownLabel.Position = UDim2.new(0.151, 0, 0.037, 0)
+					DropdownFrame.Size = UDim2.new(0, 237, 0, NormalYSize)
+					DropdownContainer.Visible = false
+					ClickSound:Play()
+					IsDropped = false
+				end
+			end)
+
+			DropdownContainer.Parent = DropdownFrame
+			DropdownContainer.Active = true
+			DropdownContainer.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			DropdownContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DropdownContainer.BackgroundTransparency = 1
+			DropdownContainer.BorderSizePixel = 0
+			DropdownContainer.Position = UDim2.new(0.177704751, 0, 0.28498134, 0)
+			DropdownContainer.Size = UDim2.new(0, 150, 0, 76)
+			DropdownContainer.ZIndex = 5
+			DropdownContainer.CanvasSize = UDim2.new(0, 0, 1, 0)
+			DropdownContainer.Visible = false
+
+			ContentLayout.Name = "ContentLayout"
+			ContentLayout.Parent = DropdownContainer
+			ContentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			ContentLayout.Padding = UDim.new(0, 8)
+			
+			for i,v in next, list do
+				local Option = Instance.new("TextButton")
+				local UICorner = Instance.new("UICorner")
+				
+				Option.Name = "Option"
+				Option.Parent = DropdownContainer
+				Option.BackgroundColor3 = Color3.fromRGB(90, 86, 127)
+				Option.BorderColor3 = Color3.fromRGB(0, 0, 0)
+				Option.BorderSizePixel = 0
+				Option.Size = UDim2.new(0, 106, 0, 21)
+				Option.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+				Option.Text = v
+				Option.TextColor3 = Color3.fromRGB(227, 227, 227)
+				Option.TextSize = 14.000
+				Option.MouseButton1Click:Connect(function()
+
+					local ClickSound = 	Instance.new("Sound")
+
+					ClickSound.Parent = UiLib
+					ClickSound.SoundId = "rbxassetid://552900451"
+					ClickSound.Volume = 2 
+					ClickSound.Pitch = 1
+
+					callback(v)
+					
+					ClickSound:Play()
+					
+					DropdownImage.Position = UDim2.new(0.03, 0, 0.196, -1)
+					DropdownLabel.Position = UDim2.new(0.151, 0, 0.037, 0)
+					DropdownFrame.Size = UDim2.new(0, 237, 0, NormalYSize)
+					DropdownContainer.Visible = false		
+					IsDropped = false
+
+					wait(0.5)
+
+					ClickSound:Destroy()
+
+				end)
+
+				UICorner.Parent = Option
+			end
+
+			ContentPadding.Name = "ContentPadding"
+			ContentPadding.Parent = DropdownContainer
+			ContentPadding.PaddingTop = UDim.new(0, 12)
+		end
+		
+		function Content.CreateLabel(LabelTitle)
+			local LabelFrame = Instance.new("Frame")
+			local LabelCorner = Instance.new("UICorner")
+			local LabelText = Instance.new("TextLabel")
+			local ChatImage = Instance.new("ImageLabel")
+			
+			LabelFrame.Name = "LabelFrame"
+			LabelFrame.Parent = TabContent
+			LabelFrame.Active = true
+			LabelFrame.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			LabelFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			LabelFrame.BorderSizePixel = 0
+			LabelFrame.ClipsDescendants = true
+			LabelFrame.Position = UDim2.new(0.0983050838, 0, 0.043636363, 0)
+			LabelFrame.Selectable = true
+			LabelFrame.Size = UDim2.new(0, 237, 0, 32)
+			LabelFrame.ZIndex = 4
+
+			LabelCorner.Name = "LabelCorner"
+			LabelCorner.Parent = LabelFrame
+
+			LabelText.Name = "LabelText"
+			LabelText.Parent = LabelFrame
+			LabelText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			LabelText.BackgroundTransparency = 1.000
+			LabelText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			LabelText.BorderSizePixel = 0
+			LabelText.Position = UDim2.new(0.038, 0, 0, 0)
+			LabelText.Size = UDim2.new(0, 220, 0, 32)
+			LabelText.ZIndex = 5
+			LabelText.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+			LabelText.Text = LabelTitle
+			LabelText.TextColor3 = Color3.fromRGB(227, 227, 227)
+			LabelText.TextSize = 26.000
+			LabelText.TextWrapped = true
+			LabelText.TextScaled = true
+			LabelText.TextXAlignment = Enum.TextXAlignment.Left
+
+			ChatImage.Name = "ChatImage"
+			ChatImage.Parent = LabelFrame
+			ChatImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ChatImage.BackgroundTransparency = 1.000
+			ChatImage.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ChatImage.BorderSizePixel = 0
+			ChatImage.Position = UDim2.new(0.0590717308, -5, 0.1875, -2)
+			ChatImage.Size = UDim2.new(0, 22, 0, 22)
+			ChatImage.ZIndex = 5
+			ChatImage.Image = "rbxassetid://13130554026"
+			ChatImage.ImageColor3 = Color3.fromRGB(228, 197, 255)
+		end
+		
+		function Content.CreateDivider(DividerTitle)
+			local DividerFrame = Instance.new("Frame")
+			local DividerCorner = Instance.new("UICorner")
+			local DividerText = Instance.new("TextLabel")
+
+			DividerFrame.Name = "DividerFrame"
+			DividerFrame.Parent = TabContent
+			DividerFrame.Active = true
+			DividerFrame.BackgroundColor3 = Color3.fromRGB(53, 50, 74)
+			DividerFrame.BackgroundTransparency = 0.500
+			DividerFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DividerFrame.BorderSizePixel = 0
+			DividerFrame.ClipsDescendants = true
+			DividerFrame.Position = UDim2.new(0.0983050838, 0, 0.043636363, 0)
+			DividerFrame.Selectable = true
+			DividerFrame.Size = UDim2.new(0, 237, 0, 22)
+			DividerFrame.ZIndex = 4
+
+			DividerCorner.Name = "DividerCorner"
+			DividerCorner.Parent = DividerFrame
+
+			DividerText.Name = "DividerText"
+			DividerText.Parent = DividerFrame
+			DividerText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			DividerText.BackgroundTransparency = 1.000
+			DividerText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DividerText.BorderSizePixel = 0
+			DividerText.Size = UDim2.new(0, 237, 0, 22)
+			DividerText.ZIndex = 5
+			DividerText.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+			DividerText.Text = DividerTitle
+			DividerText.TextColor3 = Color3.fromRGB(227, 227, 227)
+			DividerText.TextSize = 22.000
+			DividerText.TextWrapped = true
+		end
 		return Content
 	end
 	return TabSys
 end
-return Lib;
+return Lib
