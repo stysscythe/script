@@ -1,0 +1,1056 @@
+local Lib = {}
+
+local tweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
+
+function Lib:Drag(frame,parent)
+	local UIS = game:GetService('UserInputService')
+	parent = parent or frame
+	local dragToggle = nil
+	local dragSpeed = 0.25
+	local dragStart = nil
+	local startPos = nil
+
+	local function updateInput(input)
+		local delta = input.Position - dragStart
+		local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		game:GetService('TweenService'):Create(parent, TweenInfo.new(dragSpeed), {Position = position}):Play()
+	end
+
+	frame.InputBegan:Connect(function(input)
+		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then 
+			dragToggle = true
+			dragStart = input.Position
+			startPos = parent.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragToggle = false
+				end
+			end)
+		end
+	end)
+
+	UIS.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			if dragToggle then
+				updateInput(input)
+			end
+		end
+	end)
+end
+function Lib:DrawWindow(LibaryTitle)
+	LibaryTitle = LibaryTitle or "BLACKOUT"
+	
+	local BLACKOUT = Instance.new("ScreenGui")
+	local Window = Instance.new("Frame")
+	local Header = Instance.new("Frame")
+	local HeaderCorner = Instance.new("UICorner")
+	local Close = Instance.new("TextButton")
+	local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
+	local ToggleKeybind = Instance.new("TextButton")
+	local UIAspectRatioConstraint_2 = Instance.new("UIAspectRatioConstraint")
+	local UIAspectRatioConstraint_3 = Instance.new("UIAspectRatioConstraint")
+	local Title = Instance.new("TextLabel")
+	local UIAspectRatioConstraint_4 = Instance.new("UIAspectRatioConstraint")
+	local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
+	local ContentBackground = Instance.new("Frame")
+	local BackCorner = Instance.new("UICorner")
+	local UIAspectRatioConstraint_5 = Instance.new("UIAspectRatioConstraint")
+	local ContentStorage = Instance.new("Folder")
+	local UIAspectRatioConstraint_6 = Instance.new("UIAspectRatioConstraint")
+	local UIAspectRatioConstraint_7 = Instance.new("UIAspectRatioConstraint")
+	local UIListLayout = Instance.new("UIListLayout")
+	local UIPadding = Instance.new("UIPadding")
+	local Navigator = Instance.new("Frame")
+	local NavCorner = Instance.new("UICorner")
+	local UIAspectRatioConstraint_14 = Instance.new("UIAspectRatioConstraint")
+	local TabScroller = Instance.new("ScrollingFrame")
+	local UIPadding_2 = Instance.new("UIPadding")
+	local UIListLayout_2 = Instance.new("UIListLayout")
+	local TabSelector = Instance.new("TextButton")
+	local UITextSizeConstraint_11 = Instance.new("UITextSizeConstraint")
+	local UIAspectRatioConstraint_15 = Instance.new("UIAspectRatioConstraint")
+	local UIAspectRatioConstraint_16 = Instance.new("UIAspectRatioConstraint")
+	local WindowCorner = Instance.new("UICorner")
+	local Window_ShadowPng = Instance.new("ImageLabel")
+	local UIAspectRatioConstraint_17 = Instance.new("UIAspectRatioConstraint")
+	local UIAspectRatioConstraint_18 = Instance.new("UIAspectRatioConstraint")
+	local ToggleMobile = Instance.new("ImageButton")
+	local WindowCorner_2 = Instance.new("UICorner")
+	local ShadowImage = Instance.new("ImageLabel")
+	local UIAspectRatioConstraint_19 = Instance.new("UIAspectRatioConstraint")
+
+	--Properties:
+
+	BLACKOUT.Name = "BLACKOUT"
+	BLACKOUT.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	BLACKOUT.ResetOnSpawn = false
+
+	Window.Name = "Window"
+	Window.Parent = BLACKOUT
+	Window.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+	Window.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Window.BorderSizePixel = 0
+	Window.Position = UDim2.new(0.3125, 0, 0.307980061, 0)
+	Window.Size = UDim2.new(0.899999976, 0, 0.382999986, 0)
+
+	Header.Name = "Header"
+	Header.Parent = Window
+	Header.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	Header.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Header.BorderSizePixel = 0
+	Header.Size = UDim2.new(1, 0, 0.130293161, 0)
+	Header.ZIndex = 5
+	
+	Lib:Drag(Header,Window)
+
+	function Lib:ToggleMobileUI()
+		if Window.Visible then
+			local ClickSound = 	Instance.new("Sound")
+
+			ClickSound.Parent = Window
+			ClickSound.SoundId = "rbxassetid://552900451"
+			ClickSound.Volume = 2 
+			ClickSound.Pitch = 1.2
+
+			Window.Visible = false
+
+			ClickSound:Play()
+
+			wait(0.5)
+
+			ClickSound:Destroy()
+		else
+			local ClickSound = 	Instance.new("Sound")
+
+			ClickSound.Parent = Window
+			ClickSound.SoundId = "rbxassetid://552900451"
+			ClickSound.Volume = 2 
+			ClickSound.Pitch = 1
+
+			Window.Visible = true
+
+			ClickSound:Play()
+
+			wait(0.5)
+
+			ClickSound:Destroy()
+		end
+	end
+	
+	HeaderCorner.CornerRadius = UDim.new(0, 5)
+	HeaderCorner.Name = "HeaderCorner"
+	HeaderCorner.Parent = Header
+
+	Close.Name = "Close"
+	Close.Parent = Header
+	Close.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Close.BackgroundTransparency = 1.000
+	Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Close.BorderSizePixel = 0
+	Close.Position = UDim2.new(0.92570281, 0, 0.125, 0)
+	Close.Size = UDim2.new(0.0602409653, 0, 0.75, 0)
+	Close.ZIndex = 6
+	Close.Font = Enum.Font.Unknown
+	Close.Text = "X"
+	Close.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Close.TextScaled = true
+	Close.TextSize = 25.000
+	Close.TextWrapped = true
+
+	UIAspectRatioConstraint.Parent = Close
+
+	ToggleKeybind.Name = "ToggleKeybind"
+	ToggleKeybind.Parent = Header
+	ToggleKeybind.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ToggleKeybind.BackgroundTransparency = 1.000
+	ToggleKeybind.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ToggleKeybind.BorderSizePixel = 0
+	ToggleKeybind.Position = UDim2.new(0.27510041, 0, 0.310742199, 0)
+	ToggleKeybind.Size = UDim2.new(0.202811241, 0, 0.400000006, 0)
+	ToggleKeybind.ZIndex = 6
+	ToggleKeybind.Font = Enum.Font.SourceSans
+	ToggleKeybind.Text = "[ Insert ]"
+	ToggleKeybind.TextColor3 = Color3.fromRGB(98, 98, 98)
+	ToggleKeybind.TextScaled = true
+	ToggleKeybind.TextSize = 21.000
+	ToggleKeybind.TextWrapped = true
+	ToggleKeybind.Visible = false
+
+	UIAspectRatioConstraint_2.Parent = ToggleKeybind
+	UIAspectRatioConstraint_2.AspectRatio = 6.312
+
+	UIAspectRatioConstraint_3.Parent = Header
+	UIAspectRatioConstraint_3.AspectRatio = 12.450
+
+	Title.Name = "Title"
+	Title.Parent = Header
+	Title.Active = true
+	Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Title.BackgroundTransparency = 1.000
+	Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Title.BorderSizePixel = 0
+	Title.Position = UDim2.new(0.0186274517, 0, 0.0422125049, 0)
+	Title.Selectable = true
+	Title.Size = UDim2.new(0.269666672, 0, 0.899999976, 0)
+	Title.ZIndex = 6
+	Title.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+	Title.Text = LibaryTitle
+	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Title.TextScaled = true
+	Title.TextSize = 21.000
+	Title.TextWrapped = true
+
+	UIAspectRatioConstraint_4.Parent = Title
+	UIAspectRatioConstraint_4.AspectRatio = 3.730
+
+	UITextSizeConstraint.Parent = Title
+	UITextSizeConstraint.MaxTextSize = 36
+
+	ContentBackground.Name = "ContentBackground"
+	ContentBackground.Parent = Header
+	ContentBackground.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	ContentBackground.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ContentBackground.BorderSizePixel = 0
+	ContentBackground.Position = UDim2.new(0.303212851, 0, 1.07500005, 0)
+	ContentBackground.Size = UDim2.new(0.682730913, 0, 6.4749999, 0)
+
+	BackCorner.CornerRadius = UDim.new(0, 15)
+	BackCorner.Name = "BackCorner"
+	BackCorner.Parent = ContentBackground
+
+	UIAspectRatioConstraint_5.Parent = ContentBackground
+	UIAspectRatioConstraint_5.AspectRatio = 1.313
+
+	ContentStorage.Name = "ContentStorage"
+	ContentStorage.Parent = ContentBackground
+
+	UIAspectRatioConstraint_6.Parent = ContentStorage
+	UIAspectRatioConstraint_6.AspectRatio = 1.315
+
+	Navigator.Name = "Navigator"
+	Navigator.Parent = Header
+	Navigator.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	Navigator.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Navigator.BorderSizePixel = 0
+	Navigator.Position = UDim2.new(0.0100401612, 0, 1.07596898, 0)
+	Navigator.Size = UDim2.new(0.279116452, 0, 6.4749999, 0)
+
+	NavCorner.CornerRadius = UDim.new(0, 12)
+	NavCorner.Name = "NavCorner"
+	NavCorner.Parent = Navigator
+
+	UIAspectRatioConstraint_14.Parent = Navigator
+	UIAspectRatioConstraint_14.AspectRatio = 0.537
+	
+	local TabSystem = {}
+	
+	local first = true
+
+	function TabSystem.CreateTab(TabName)
+		TabName = TabName or "Home"
+		
+		local TabSelector = Instance.new("TextButton")
+		local UITextSizeConstraint_11 = Instance.new("UITextSizeConstraint")
+		local UIAspectRatioConstraint_15 = Instance.new("UIAspectRatioConstraint")
+		local UIAspectRatioConstraint_16 = Instance.new("UIAspectRatioConstraint")
+		local ContentHolder = Instance.new("ScrollingFrame")
+		local UIAspectRatioConstraint_7 = Instance.new("UIAspectRatioConstraint")
+		local UIListLayout = Instance.new("UIListLayout")
+		local UIPadding = Instance.new("UIPadding")
+		
+		TabSelector.Name = "TabSelector"
+		TabSelector.Parent = TabScroller
+		TabSelector.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TabSelector.BackgroundTransparency = 1.000
+		TabSelector.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		TabSelector.BorderSizePixel = 0
+		TabSelector.Position = UDim2.new(0.0855269358, 0, 0, 0)
+		TabSelector.Size = UDim2.new(0.828946292, 0, 0.0480339192, 0)
+		TabSelector.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+		TabSelector.Text = TabName
+		TabSelector.TextColor3 = Color3.fromRGB(255, 255, 255)
+		TabSelector.TextScaled = true
+		TabSelector.TextSize = 25.000
+		TabSelector.TextWrapped = true
+
+		UITextSizeConstraint_11.Parent = TabSelector
+		UITextSizeConstraint_11.MaxTextSize = 28
+
+		UIAspectRatioConstraint_15.Parent = TabSelector
+		UIAspectRatioConstraint_15.AspectRatio = 4.101
+
+		UIAspectRatioConstraint_16.Parent = TabScroller
+		UIAspectRatioConstraint_16.AspectRatio = 0.518
+
+		
+		ContentHolder.Name = "ContentHolder"
+		ContentHolder.Parent = ContentStorage
+		ContentHolder.Active = true
+		ContentHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ContentHolder.BackgroundTransparency = 1.000
+		ContentHolder.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ContentHolder.BorderSizePixel = 0
+		ContentHolder.Size = UDim2.new(0.993588746, 0, 1.00128961, 0)
+		ContentHolder.ScrollBarThickness = 5
+
+		UIAspectRatioConstraint_7.Parent = ContentHolder
+		UIAspectRatioConstraint_7.AspectRatio = 1.313
+
+		UIListLayout.Parent = ContentHolder
+		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+		UIListLayout.Padding = UDim.new(0, 13)
+
+		UIPadding.Parent = ContentHolder
+		UIPadding.PaddingLeft = UDim.new(0, -7)
+		UIPadding.PaddingTop = UDim.new(0, 13)
+		
+		if first then
+			first = false
+			ContentHolder.Visible = true
+			TabSelector.TextColor3 = Color3.fromRGB(255, 255, 255)
+		else
+			ContentHolder.Visible = false
+			TabSelector.TextColor3 = Color3.fromRGB(199, 199, 199)
+		end
+
+		TabSelector.MouseButton1Click:Connect(function()
+			for i,v in next, ContentStorage:GetChildren() do
+				if v:IsA("ScrollingFrame") then v.Visible = false
+			end
+			ContentHolder.Visible = true
+
+			for i,v in next, TabScroller:GetChildren() do
+				if v:IsA("TextButton") then
+					game.TweenService:Create(v, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(199, 199, 199)
+					}):Play()
+				end
+			end
+			game.TweenService:Create(TabSelector, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+				TextColor3 = Color3.fromRGB(255, 255, 255)
+			}):Play()
+			
+			end
+			
+			print(TabName)
+		end)
+		
+		local Content = {}
+		
+		function Content.CreateButton(btntitle, callback)
+			btntitle = btntitle or "button"
+			callback = callback or function() end
+			
+			local Button = Instance.new("Frame")
+			local ButtonHitbox = Instance.new("TextButton")
+			local UITextSizeConstraint_2 = Instance.new("UITextSizeConstraint")
+			local UIAspectRatioConstraint_8 = Instance.new("UIAspectRatioConstraint")
+			local ImageLabel = Instance.new("ImageLabel")
+			local ButtonLabel = Instance.new("TextLabel")
+			local UITextSizeConstraint_3 = Instance.new("UITextSizeConstraint")
+			local UICorner = Instance.new("UICorner")
+			
+			Button.Name = "Button"
+			Button.Parent = ContentHolder
+			Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Button.BackgroundTransparency = 0.950
+			Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Button.BorderSizePixel = 0
+			Button.Position = UDim2.new(0.495624691, 0, 0, 0)
+			Button.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
+
+			ButtonHitbox.Name = "ButtonHitbox"
+			ButtonHitbox.Parent = Button
+			ButtonHitbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ButtonHitbox.BackgroundTransparency = 1.000
+			ButtonHitbox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ButtonHitbox.BorderSizePixel = 0
+			ButtonHitbox.Size = UDim2.new(1, 0, 0.956613898, 0)
+			ButtonHitbox.Font = Enum.Font.SourceSans
+			ButtonHitbox.Text = ""
+			ButtonHitbox.TextColor3 = Color3.fromRGB(0, 0, 0)
+			ButtonHitbox.TextScaled = true
+			ButtonHitbox.TextSize = 14.000
+			ButtonHitbox.TextTransparency = 1.000
+			ButtonHitbox.TextWrapped = true
+
+			UITextSizeConstraint_2.Parent = ButtonHitbox
+			UITextSizeConstraint_2.MaxTextSize = 14
+
+			UIAspectRatioConstraint_8.Parent = ButtonHitbox
+			UIAspectRatioConstraint_8.AspectRatio = 8.107
+
+			ImageLabel.Parent = Button
+			ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ImageLabel.BackgroundTransparency = 1.000
+			ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ImageLabel.BorderSizePixel = 0
+			ImageLabel.Position = UDim2.new(0.880773962, -5, 0.0266141016, 0)
+			ImageLabel.Size = UDim2.new(0.118394703, 0, 0.930000007, 0)
+			ImageLabel.Image = "rbxassetid://12971542582"
+			ImageLabel.ImageColor3 = Color3.fromRGB(176, 176, 176)
+
+			ButtonLabel.Name = "ButtonLabel"
+			ButtonLabel.Parent = Button
+			ButtonLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ButtonLabel.BackgroundTransparency = 1.000
+			ButtonLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ButtonLabel.BorderSizePixel = 0
+			ButtonLabel.Position = UDim2.new(0.0457746238, 0, 0.0559202395, 0)
+			ButtonLabel.Size = UDim2.new(0.699999928, 0, 0.930000424, 0)
+			ButtonLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			ButtonLabel.Text = btntitle
+			ButtonLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
+			ButtonLabel.TextScaled = true
+			ButtonLabel.TextSize = 26.000
+			ButtonLabel.TextWrapped = true
+			ButtonLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			UITextSizeConstraint_3.Parent = ButtonLabel
+			UITextSizeConstraint_3.MaxTextSize = 31
+
+			UICorner.Parent = Button
+			UICorner.CornerRadius = UDim.new(0, 6)
+			
+			ButtonHitbox.MouseButton1Click:Connect(function()
+					local ClickSound = 	Instance.new("Sound")
+
+					ClickSound.Parent = ButtonHitbox
+					ClickSound.SoundId = "rbxassetid://552900451"
+					ClickSound.Volume = 2 
+					ClickSound.Pitch = 1
+
+					ClickSound:Play()
+				game.TweenService:Create(Button, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					BackgroundTransparency = 0.85
+				}):Play()
+				
+				game.TweenService:Create(ButtonLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					TextColor3 = Color3.fromRGB(255, 255, 255)
+				}):Play()
+				
+				game.TweenService:Create(ImageLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					ImageColor3 = Color3.fromRGB(255, 255, 255)
+				}):Play()
+				
+				callback()
+				
+				wait(0.05)
+				
+				game.TweenService:Create(Button, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					BackgroundTransparency = 0.95
+				}):Play()
+				
+				game.TweenService:Create(ButtonLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					TextColor3 = Color3.fromRGB(176, 176, 176)
+				}):Play()
+
+				game.TweenService:Create(ImageLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					ImageColor3 = Color3.fromRGB(176, 176, 176)
+				}):Play()
+			end)
+			
+			ButtonHitbox.TouchTap:Connect(function()
+				local ClickSound = 	Instance.new("Sound")
+
+				ClickSound.Parent = ButtonHitbox
+				ClickSound.SoundId = "rbxassetid://552900451"
+				ClickSound.Volume = 2 
+				ClickSound.Pitch = 1
+
+				ClickSound:Play()
+				game.TweenService:Create(Button, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					BackgroundTransparency = 0.85
+				}):Play()
+
+				game.TweenService:Create(ButtonLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					TextColor3 = Color3.fromRGB(255, 255, 255)
+				}):Play()
+
+				game.TweenService:Create(ImageLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					ImageColor3 = Color3.fromRGB(255, 255, 255)
+				}):Play()
+
+				callback()
+
+				wait(0.05)
+
+				game.TweenService:Create(Button, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					BackgroundTransparency = 0.95
+				}):Play()
+
+				game.TweenService:Create(ButtonLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					TextColor3 = Color3.fromRGB(176, 176, 176)
+				}):Play()
+
+				game.TweenService:Create(ImageLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					ImageColor3 = Color3.fromRGB(176, 176, 176)
+				}):Play()
+			end)
+		end
+		
+		function Content.CreateToggle(tgltitle, callback)
+			tgltitle = tgltitle or "Toggle"
+			callback = callback or function() end
+			local toggled = false
+			
+			local Toggle = Instance.new("Frame")
+			local ToggleLabel = Instance.new("TextLabel")
+			local UITextSizeConstraint_4 = Instance.new("UITextSizeConstraint")
+			local UICorner_2 = Instance.new("UICorner")
+			local ToggleHitbox = Instance.new("TextButton")
+			local UIAspectRatioConstraint_9 = Instance.new("UIAspectRatioConstraint")
+			local UITextSizeConstraint_5 = Instance.new("UITextSizeConstraint")
+			local Status = Instance.new("Frame")
+			local UICorner_3 = Instance.new("UICorner")
+			local UIAspectRatioConstraint_10 = Instance.new("UIAspectRatioConstraint")
+			local StatusStroke = Instance.new("UIStroke")
+			
+			Toggle.Name = "Toggle"
+			Toggle.Parent = ContentHolder
+			Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Toggle.BackgroundTransparency = 0.950
+			Toggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Toggle.BorderSizePixel = 0
+			Toggle.Position = UDim2.new(0.495624691, 0, 0, 0)
+			Toggle.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
+
+			ToggleLabel.Name = "ToggleLabel"
+			ToggleLabel.Parent = Toggle
+			ToggleLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ToggleLabel.BackgroundTransparency = 1.000
+			ToggleLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ToggleLabel.BorderSizePixel = 0
+			ToggleLabel.Position = UDim2.new(0.0457746238, 0, 0.0559202395, 0)
+			ToggleLabel.Size = UDim2.new(0.699999928, 0, 0.930000424, 0)
+			ToggleLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			ToggleLabel.Text = tgltitle
+			ToggleLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
+			ToggleLabel.TextScaled = false
+			ToggleLabel.TextSize = 26.000
+			ToggleLabel.TextWrapped = true
+			ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			UITextSizeConstraint_4.Parent = ToggleLabel
+			UITextSizeConstraint_4.MaxTextSize = 31
+
+			UICorner_2.Parent = Toggle
+
+			ToggleHitbox.Name = "ToggleHitbox"
+			ToggleHitbox.Parent = Toggle
+			ToggleHitbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ToggleHitbox.BackgroundTransparency = 1.000
+			ToggleHitbox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ToggleHitbox.BorderSizePixel = 0
+			ToggleHitbox.Size = UDim2.new(0.997050107, 0, 0.957777679, 0)
+			ToggleHitbox.Font = Enum.Font.SourceSans
+			ToggleHitbox.Text = ""
+			ToggleHitbox.TextColor3 = Color3.fromRGB(0, 0, 0)
+			ToggleHitbox.TextScaled = true
+			ToggleHitbox.TextSize = 14.000
+			ToggleHitbox.TextTransparency = 1.000
+			ToggleHitbox.TextWrapped = true
+
+			UIAspectRatioConstraint_9.Parent = ToggleHitbox
+			UIAspectRatioConstraint_9.AspectRatio = 6.657
+
+			UITextSizeConstraint_5.Parent = ToggleHitbox
+			UITextSizeConstraint_5.MaxTextSize = 14
+
+			Status.Name = "Status"
+			Status.Parent = Toggle
+			Status.BackgroundColor3 = Color3.fromRGB(117, 117, 117)
+			Status.BackgroundTransparency = 1.000
+			Status.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Status.BorderSizePixel = 0
+			Status.Position = UDim2.new(0.880172074, 0, 0.218879953, 0)
+			Status.Size = UDim2.new(0.09069141, 0, 0.580225348, 0)
+			
+			StatusStroke.Name = "StatusStroke"
+			StatusStroke.Parent = Status
+			StatusStroke.Color = Color3.fromRGB(255,255,255)
+			StatusStroke.Thickness = 2
+
+			UICorner_3.Parent = Status
+
+			UIAspectRatioConstraint_10.Parent = Status
+			
+			ToggleHitbox.MouseButton1Click:Connect(function()
+				if toggled == false then
+					game.TweenService:Create(Status, TweenInfo.new(0.2, Enum.EasingStyle.Linear,Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.4
+					}):Play()
+					
+					game.TweenService:Create(Toggle, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.85
+					}):Play()
+
+					game.TweenService:Create(ToggleLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(255, 255, 255)
+					}):Play()
+
+					wait(0.05)
+
+					game.TweenService:Create(Toggle, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.95
+					}):Play()
+
+					game.TweenService:Create(ToggleLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(176, 176, 176)
+					}):Play()
+
+					local ClickSound = 	Instance.new("Sound")
+
+					ClickSound.Parent = ToggleHitbox
+					ClickSound.SoundId = "rbxassetid://552900451"
+					ClickSound.Volume = 2 
+					ClickSound.Pitch = 1
+
+					ClickSound:Play()
+
+
+					wait(0.25)
+					toggled = true
+				elseif toggled == true then
+					game.TweenService:Create(Status, TweenInfo.new(0.2, Enum.EasingStyle.Linear,Enum.EasingDirection.In), {
+						BackgroundTransparency = 1
+					}):Play()
+					
+					game.TweenService:Create(Toggle, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.85
+					}):Play()
+
+					game.TweenService:Create(ToggleLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(255, 255, 255)
+					}):Play()
+					
+					wait(0.05)
+					
+					game.TweenService:Create(Toggle, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.95
+					}):Play()
+
+					game.TweenService:Create(ToggleLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(176, 176, 176)
+					}):Play()
+
+					local ClickSound = 	Instance.new("Sound")
+
+					ClickSound.Parent = ToggleHitbox
+					ClickSound.SoundId = "rbxassetid://552900451"
+					ClickSound.Volume = 2 
+					ClickSound.Pitch = 1.2
+
+					ClickSound:Play()
+					wait(0.25)
+					toggled = false
+				end
+				pcall(callback, toggled)
+			end)
+		end
+		
+		function Content.CreateSlider(sliderttl, minvalue, maxvalue, callback)
+			sliderttl = sliderttl or "Slider"
+			minvalue = minvalue or 1
+			maxvalue = maxvalue or 25
+			callback = callback or function() end
+			
+			local Slider = Instance.new("Frame")
+			local SliderCorner = Instance.new("UICorner")
+			local ToggleLabel_2 = Instance.new("TextLabel")
+			local UITextSizeConstraint_8 = Instance.new("UITextSizeConstraint")
+			local ValueLabel = Instance.new("TextBox")
+			local UIAspectRatioConstraint_11 = Instance.new("UIAspectRatioConstraint")
+			local UITextSizeConstraint_9 = Instance.new("UITextSizeConstraint")
+			local SliderTrigger = Instance.new("TextButton")
+			local SliderBack = Instance.new("Frame")
+			local SliderFill = Instance.new("Frame")
+			local SliderCorner_2 = Instance.new("UICorner")
+			local SliderCorner_3 = Instance.new("UICorner")
+			local UIAspectRatioConstraint_12 = Instance.new("UIAspectRatioConstraint")
+			local UIAspectRatioConstraint_13 = Instance.new("UIAspectRatioConstraint")
+			
+			Slider.Name = "Slider"
+			Slider.Parent = ContentHolder
+			Slider.Active = true
+			Slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Slider.BackgroundTransparency = 0.950
+			Slider.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Slider.BorderSizePixel = 0
+			Slider.Position = UDim2.new(0.0749999359, 0, 0.633345783, 0)
+			Slider.Selectable = true
+			Slider.Size = UDim2.new(0.850000024, 0, 0.100000001, 0)
+			Slider.ZIndex = 4
+
+			SliderCorner.Name = "SliderCorner"
+			SliderCorner.Parent = Slider
+
+			ToggleLabel_2.Name = "ToggleLabel"
+			ToggleLabel_2.Parent = Slider
+			ToggleLabel_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ToggleLabel_2.BackgroundTransparency = 1.000
+			ToggleLabel_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ToggleLabel_2.BorderSizePixel = 0
+			ToggleLabel_2.Position = UDim2.new(0.0457747281, 0, 0.0559202954, 0)
+			ToggleLabel_2.Size = UDim2.new(0.699999928, 0, 0.531020164, 0)
+			ToggleLabel_2.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			ToggleLabel_2.Text = sliderttl
+			ToggleLabel_2.TextColor3 = Color3.fromRGB(176, 176, 176)
+			ToggleLabel_2.TextScaled = true
+			ToggleLabel_2.TextSize = 26.000
+			ToggleLabel_2.TextWrapped = true
+			ToggleLabel_2.TextXAlignment = Enum.TextXAlignment.Left
+
+			UITextSizeConstraint_8.Parent = ToggleLabel_2
+			UITextSizeConstraint_8.MaxTextSize = 31
+
+			ValueLabel.Name = "ValueLabel"
+			ValueLabel.Parent = Slider
+			ValueLabel.Active = false
+			ValueLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ValueLabel.BackgroundTransparency = 1.000
+			ValueLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			ValueLabel.BorderSizePixel = 0
+			ValueLabel.Position = UDim2.new(0.838057876, 0, -0.0039273384, 0)
+			ValueLabel.Selectable = false
+			ValueLabel.Size = UDim2.new(0.144372806, 0, 0.670663297, 0)
+			ValueLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			ValueLabel.Text = minvalue
+			ValueLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
+			ValueLabel.TextScaled = true
+			ValueLabel.TextSize = 26.000
+			ValueLabel.TextWrapped = true
+
+			UIAspectRatioConstraint_11.Parent = ValueLabel
+			UIAspectRatioConstraint_11.AspectRatio = 1.252
+
+			UITextSizeConstraint_9.Parent = ValueLabel
+			UITextSizeConstraint_9.MaxTextSize = 26
+
+			SliderTrigger.Name = "SliderTrigger"
+			SliderTrigger.Parent = Slider
+			SliderTrigger.Active = false
+			SliderTrigger.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			SliderTrigger.BackgroundTransparency = 1.000
+			SliderTrigger.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			SliderTrigger.BorderSizePixel = 0
+			SliderTrigger.ClipsDescendants = true
+			SliderTrigger.Position = UDim2.new(0.0754555389, 0, 0.678266287, 0)
+			SliderTrigger.Selectable = false
+			SliderTrigger.Size = UDim2.new(0.860879064, 0, 0.179541081, 0)
+			SliderTrigger.Text = ""
+			SliderTrigger.TextTransparency = 1.000
+
+			SliderBack.Name = "SliderBack"
+			SliderBack.Parent = SliderTrigger
+			SliderBack.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			SliderBack.BackgroundTransparency = 0.950
+			SliderBack.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			SliderBack.BorderSizePixel = 0
+			SliderBack.ClipsDescendants = true
+			SliderBack.Size = UDim2.new(1, 0, 1, 0)
+
+			SliderFill.Name = "SliderFill"
+			SliderFill.Parent = SliderBack
+			SliderFill.BackgroundColor3 = Color3.fromRGB(94, 94, 94)
+			SliderFill.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			SliderFill.BorderSizePixel = 0
+			SliderFill.ClipsDescendants = true
+			SliderFill.Position = UDim2.new(0, 1, 0, 0)
+			SliderFill.Size = UDim2.new(0, 0, 0, 9)
+
+			SliderCorner_2.Name = "SliderCorner"
+			SliderCorner_2.Parent = SliderFill
+
+			SliderCorner_3.Name = "SliderCorner"
+			SliderCorner_3.Parent = SliderBack
+
+			UIAspectRatioConstraint_12.Parent = SliderBack
+			UIAspectRatioConstraint_12.AspectRatio = 27.889
+
+			UIAspectRatioConstraint_13.Parent = SliderTrigger
+			UIAspectRatioConstraint_13.AspectRatio = 27.889
+			
+			local mouse = game.Players.LocalPlayer:GetMouse()
+			local uis = game:GetService("UserInputService")
+			local Value;
+
+			SliderTrigger.MouseButton1Down:Connect(function()
+				game.TweenService:Create(ValueLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+					TextTransparency = 0
+				}):Play()
+				Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue)) or 0
+				pcall(function()
+					callback(Value)
+				end)
+				SliderFill:TweenSize(UDim2.new(0, math.clamp(mouse.X - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
+				moveconnection = mouse.Move:Connect(function()
+					ValueLabel.Text = Value
+					Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue))
+					pcall(function()
+						callback(Value)
+					end)
+					SliderFill:TweenSize(UDim2.new(0, math.clamp(mouse.X - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
+				end)
+				releaseconnection = uis.InputEnded:Connect(function(Mouse)
+					if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
+						Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue))
+						pcall(function()
+							callback(Value)
+						end)
+						ValueLabel.Text = Value
+						game.TweenService:Create(ValueLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+							TextTransparency = 0
+						}):Play()
+						SliderFill:TweenSize(UDim2.new(0, math.clamp(mouse.X - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
+						moveconnection:Disconnect()
+						releaseconnection:Disconnect()
+					end
+				end)
+			end)
+			
+			-- When ValueLabel gains focus, clear the text or set it to a default value
+			ValueLabel.FocusLost:Connect(function(enterPressed)
+				local newValue = tonumber(ValueLabel.Text) or tonumber(minvalue)
+
+				-- Check if the input is valid
+				if newValue and newValue >= tonumber(minvalue) and newValue <= tonumber(maxvalue) then
+					-- Update slider position based on the TextBox input
+					local sliderPos = math.clamp(((newValue - tonumber(minvalue)) / (tonumber(maxvalue) - tonumber(minvalue))) * 206, 0, 206)
+					SliderFill:TweenSize(UDim2.new(0, sliderPos, 0, 7), "InOut", "Linear", 0.15, true)
+
+					-- Invoke callback with the new value
+					pcall(function()
+						callback(newValue)
+					end)
+
+					-- If enter was not pressed, reset text to the latest valid value
+					if not enterPressed then
+						ValueLabel.Text = tostring(Value)
+					end
+				else
+					-- If input is invalid, reset the text to the previous valid value
+					ValueLabel.Text = tostring(Value)
+				end
+			end)
+
+			-- Ensure to handle cases where text is not a number while typing
+			ValueLabel:GetPropertyChangedSignal("Text"):Connect(function()
+				local newText = ValueLabel.Text
+				if newText ~= "" and not tonumber(newText) then
+					-- Reset text to the previous valid value if not a number
+					ValueLabel.Text = tostring(Value)
+				end
+			end)
+		end
+		
+		function Content.CreateTextbox(textboxname, callback)
+			textboxname = textboxname or "Textbox"
+			callback = callback or function() end
+			
+			local Textbox = Instance.new("Frame")
+			local TextboxLabel = Instance.new("TextLabel")
+			local UITextSizeConstraint_6 = Instance.new("UITextSizeConstraint")
+			local UICorner_4 = Instance.new("UICorner")
+			local TextboxInput = Instance.new("TextBox")
+			local UITextSizeConstraint_7 = Instance.new("UITextSizeConstraint")
+			local UICorner_5 = Instance.new("UICorner")
+			
+			Textbox.Name = "Textbox"
+			Textbox.Parent = ContentHolder
+			Textbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Textbox.BackgroundTransparency = 0.950
+			Textbox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Textbox.BorderSizePixel = 0
+			Textbox.Position = UDim2.new(0.495624691, 0, 0, 0)
+			Textbox.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
+
+			TextboxLabel.Name = "TextboxLabel"
+			TextboxLabel.Parent = Textbox
+			TextboxLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextboxLabel.BackgroundTransparency = 1.000
+			TextboxLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextboxLabel.BorderSizePixel = 0
+			TextboxLabel.Position = UDim2.new(0.0457746238, 0, 0.0559202395, 0)
+			TextboxLabel.Size = UDim2.new(0.699999928, 0, 0.930000424, 0)
+			TextboxLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			TextboxLabel.Text = textboxname
+			TextboxLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
+			TextboxLabel.TextScaled = true
+			TextboxLabel.TextSize = 26.000
+			TextboxLabel.TextWrapped = true
+			TextboxLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			UITextSizeConstraint_6.Parent = TextboxLabel
+			UITextSizeConstraint_6.MaxTextSize = 31
+
+			UICorner_4.Parent = Textbox
+
+			TextboxInput.Name = "TextboxInput"
+			TextboxInput.Parent = Textbox
+			TextboxInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextboxInput.BackgroundTransparency = 0.950
+			TextboxInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextboxInput.BorderSizePixel = 0
+			TextboxInput.Position = UDim2.new(0.797221601, 0, 0.159592077, 0)
+			TextboxInput.Size = UDim2.new(0.182717696, 0, 0.648069203, 0)
+			TextboxInput.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			TextboxInput.PlaceholderText = "Input"
+			TextboxInput.Text = ""
+			TextboxInput.TextColor3 = Color3.fromRGB(193, 193, 193)
+			TextboxInput.TextScaled = true
+			TextboxInput.TextSize = 14.000
+			TextboxInput.TextWrapped = true
+
+			UITextSizeConstraint_7.Parent = TextboxInput
+			UITextSizeConstraint_7.MaxTextSize = 14
+
+			UICorner_5.Parent = TextboxInput
+			
+			TextboxInput.FocusLost:Connect(function(EnterPressed)
+				Textbox.MouseEnter:Connect(function()
+					game.TweenService:Create(Textbox, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.85
+					}):Play()
+
+					game.TweenService:Create(TextboxLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(255, 255, 255)
+					}):Play()
+				end)
+				if EnterPressed then 
+					callback(TextboxInput.Text)
+					TextboxInput.Text = ""  -- Clear the TextBox after processing
+				end
+				
+				Textbox.MouseLeave:Connect(function()
+					game.TweenService:Create(Textbox, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.95
+					}):Play()
+
+					game.TweenService:Create(TextboxLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(176, 176, 176)
+					}):Play()
+				end)
+			end)
+		end
+		
+		function Content.CreateLabel(lbltext)
+			lbltext = lbltext or "Label"
+			
+			local Label = Instance.new("Frame")
+			local LabelText = Instance.new("TextLabel")
+			local UITextSizeConstraint_10 = Instance.new("UITextSizeConstraint")
+			local UICorner_6 = Instance.new("UICorner")
+			
+			Label.Name = "Label"
+			Label.Parent = ContentHolder
+			Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Label.BackgroundTransparency = 0.950
+			Label.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Label.BorderSizePixel = 0
+			Label.Position = UDim2.new(0.495624691, 0, 0, 0)
+			Label.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
+
+			LabelText.Name = "LabelText"
+			LabelText.Parent = Label
+			LabelText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			LabelText.BackgroundTransparency = 1.000
+			LabelText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			LabelText.BorderSizePixel = 0
+			LabelText.Position = UDim2.new(0.0457749367, 0, 0.0559198931, 0)
+			LabelText.Size = UDim2.new(0.934164584, 0, 0.930000424, 0)
+			LabelText.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			LabelText.TextColor3 = Color3.fromRGB(176, 176, 176)
+			LabelText.TextScaled = true
+			LabelText.TextSize = 26.000
+			LabelText.TextWrapped = true
+			LabelText.Text = lbltext
+
+			UITextSizeConstraint_10.Parent = LabelText
+			UITextSizeConstraint_10.MaxTextSize = 31
+
+			UICorner_6.Parent = Label
+		end
+		return Content
+	end
+		
+	TabScroller.Name = "TabScroller"
+	TabScroller.Parent = Navigator
+	TabScroller.Active = true
+	TabScroller.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	TabScroller.BackgroundTransparency = 1.000
+	TabScroller.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	TabScroller.BorderSizePixel = 0
+	TabScroller.Position = UDim2.new(0.030765783, 0, -0.00365350395, 0)
+	TabScroller.Size = UDim2.new(0.961111009, 0, 0.996712923, 0)
+	TabScroller.ScrollBarImageTransparency = 1
+
+	UIPadding_2.Parent = TabScroller
+	UIPadding_2.PaddingLeft = UDim.new(0.0500000007, 0)
+	UIPadding_2.PaddingRight = UDim.new(0.0500000007, 0)
+	UIPadding_2.PaddingTop = UDim.new(0, 12)
+
+	UIListLayout_2.Parent = TabScroller
+	UIListLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
+	UIListLayout_2.Padding = UDim.new(0, 1)
+
+	WindowCorner.CornerRadius = UDim.new(0, 15)
+	WindowCorner.Name = "WindowCorner"
+	WindowCorner.Parent = Window
+
+	Window_ShadowPng.Name = "Window_ShadowPng"
+	Window_ShadowPng.Parent = Window
+	Window_ShadowPng.BackgroundTransparency = 1.000
+	Window_ShadowPng.BorderColor3 = Color3.fromRGB(27, 42, 53)
+	Window_ShadowPng.Position = UDim2.new(-0.076305218, 0, -0.0456026047, 0)
+	Window_ShadowPng.Size = UDim2.new(1.15060246, 0, 1.2149837, 0)
+	Window_ShadowPng.ZIndex = -1
+	Window_ShadowPng.Image = "rbxassetid://313486536"
+
+	UIAspectRatioConstraint_17.Parent = Window_ShadowPng
+	UIAspectRatioConstraint_17.AspectRatio = 1.536
+
+	UIAspectRatioConstraint_18.Parent = Window
+	UIAspectRatioConstraint_18.AspectRatio = 1.622
+
+	ToggleMobile.Name = "Toggle Mobile"
+	ToggleMobile.Parent = BLACKOUT
+	ToggleMobile.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	ToggleMobile.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ToggleMobile.BorderSizePixel = 0
+	ToggleMobile.Position = UDim2.new(0.780073822, 0, 0.204260647, 0)
+	ToggleMobile.Size = UDim2.new(0.0387192853, 0, 0.0651629046, 0)
+	ToggleMobile.Image = "rbxassetid://12072054746"
+	ToggleMobile.Draggable = true
+
+	WindowCorner_2.CornerRadius = UDim.new(0, 5)
+	WindowCorner_2.Name = "WindowCorner"
+	WindowCorner_2.Parent = ToggleMobile
+
+	ShadowImage.Name = "ShadowImage"
+	ShadowImage.Parent = ToggleMobile
+	ShadowImage.AnchorPoint = Vector2.new(0.5, 0.5)
+	ShadowImage.BackgroundTransparency = 1.000
+	ShadowImage.Position = UDim2.new(0.5, 0, 0.5, 0)
+	ShadowImage.Size = UDim2.new(1.5, 0, 1.5, 0)
+	ShadowImage.ZIndex = 0
+	ShadowImage.Image = "rbxassetid://16389697796"
+	ShadowImage.ImageColor3 = Color3.fromRGB(0, 0, 0)
+
+	UIAspectRatioConstraint_19.Parent = ToggleMobile
+	UIAspectRatioConstraint_19.AspectRatio = 1.000
+	
+	ToggleMobile.TouchTap:Connect(function()
+		Lib:ToggleMobileUI()
+	end)
+	ToggleMobile.MouseButton1Click:Connect(function()
+		Lib:ToggleMobileUI()
+	end)
+	
+	return TabSystem
+end
+return Lib
