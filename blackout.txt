@@ -530,7 +530,7 @@ function Lib:DrawWindow(LibaryTitle)
 			ToggleLabel.Text = tgltitle
 			ToggleLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
 			ToggleLabel.TextScaled = false
-			ToggleLabel.TextSize = 26.000
+			ToggleLabel.TextSize = 14.000
 			ToggleLabel.TextWrapped = true
 			ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -774,78 +774,91 @@ function Lib:DrawWindow(LibaryTitle)
 			UIAspectRatioConstraint_13.Parent = SliderTrigger
 			UIAspectRatioConstraint_13.AspectRatio = 27.889
 			
-			local mouse = game.Players.LocalPlayer:GetMouse()
-			local uis = game:GetService("UserInputService")
-			local Value;
+local mouse = game.Players.LocalPlayer:GetMouse()
+local uis = game:GetService("UserInputService")
+local Value;
 
-			SliderTrigger.MouseButton1Down:Connect(function()
+local function updateSlider(inputPosition)
+	Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue)) or 0
+	pcall(function()
+		callback(Value)
+	end)
+	SliderFill:TweenSize(UDim2.new(0, math.clamp(inputPosition - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
+	ValueLabel.Text = Value
+end
+
+SliderTrigger.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		-- Show the value label
+		game.TweenService:Create(ValueLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+			TextTransparency = 0
+		}):Play()
+
+		-- Update the slider based on input position
+		updateSlider(input.Position.X)
+
+		-- Detect movement for both mouse and touch
+		moveconnection = uis.InputChanged:Connect(function(movementInput)
+			if movementInput.UserInputType == Enum.UserInputType.MouseMovement or movementInput.UserInputType == Enum.UserInputType.Touch then
+				updateSlider(movementInput.Position.X)
+			end
+		end)
+
+		-- Handle releasing the input
+		releaseconnection = uis.InputEnded:Connect(function(endedInput)
+			if endedInput.UserInputType == Enum.UserInputType.MouseButton1 or endedInput.UserInputType == Enum.UserInputType.Touch then
+				-- Final update for the slider
+				updateSlider(endedInput.Position.X)
+
+				-- Hide the value label
 				game.TweenService:Create(ValueLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-					TextTransparency = 0
+					TextTransparency = 1
 				}):Play()
-				Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue)) or 0
-				pcall(function()
-					callback(Value)
-				end)
-				SliderFill:TweenSize(UDim2.new(0, math.clamp(mouse.X - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
-				moveconnection = mouse.Move:Connect(function()
-					ValueLabel.Text = Value
-					Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue))
-					pcall(function()
-						callback(Value)
-					end)
-					SliderFill:TweenSize(UDim2.new(0, math.clamp(mouse.X - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
-				end)
-				releaseconnection = uis.InputEnded:Connect(function(Mouse)
-					if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
-						Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue))
-						pcall(function()
-							callback(Value)
-						end)
-						ValueLabel.Text = Value
-						game.TweenService:Create(ValueLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-							TextTransparency = 0
-						}):Play()
-						SliderFill:TweenSize(UDim2.new(0, math.clamp(mouse.X - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
-						moveconnection:Disconnect()
-						releaseconnection:Disconnect()
-					end
-				end)
-			end)
+
+				-- Disconnect connections
+				moveconnection:Disconnect()
+				releaseconnection:Disconnect()
+			end
+		end)
+	end
+end)
+
 			
-			-- When ValueLabel gains focus, clear the text or set it to a default value
-			ValueLabel.FocusLost:Connect(function(enterPressed)
-				local newValue = tonumber(ValueLabel.Text) or tonumber(minvalue)
+ValueLabel.FocusLost:Connect(function(enterPressed)
+	-- This works for desktop when Enter is pressed or focus is lost
+	processInput(ValueLabel.Text, enterPressed)
+end)
 
-				-- Check if the input is valid
-				if newValue and newValue >= tonumber(minvalue) and newValue <= tonumber(maxvalue) then
-					-- Update slider position based on the TextBox input
-					local sliderPos = math.clamp(((newValue - tonumber(minvalue)) / (tonumber(maxvalue) - tonumber(minvalue))) * 206, 0, 206)
-					SliderFill:TweenSize(UDim2.new(0, sliderPos, 0, 7), "InOut", "Linear", 0.15, true)
+-- For mobile support, handle the input every time the text changes
+ValueLabel:GetPropertyChangedSignal("Text"):Connect(function()
+	processInput(ValueLabel.Text, true) -- Process input continuously for mobile devices
+end)
 
-					-- Invoke callback with the new value
-					pcall(function()
-						callback(newValue)
-					end)
+-- Function to handle value input processing
+function processInput(newText, enterPressed)
+	local newValue = tonumber(newText) or tonumber(minvalue)
 
-					-- If enter was not pressed, reset text to the latest valid value
-					if not enterPressed then
-						ValueLabel.Text = tostring(Value)
-					end
-				else
-					-- If input is invalid, reset the text to the previous valid value
-					ValueLabel.Text = tostring(Value)
-				end
-			end)
+	-- Check if the input is valid
+	if newValue and newValue >= tonumber(minvalue) and newValue <= tonumber(maxvalue) then
+		-- Update slider position based on the TextBox input
+		local sliderPos = math.clamp(((newValue - tonumber(minvalue)) / (tonumber(maxvalue) - tonumber(minvalue))) * 206, 0, 206)
+		SliderFill:TweenSize(UDim2.new(0, sliderPos, 0, 7), "InOut", "Linear", 0.15, true)
 
-			-- Ensure to handle cases where text is not a number while typing
-			ValueLabel:GetPropertyChangedSignal("Text"):Connect(function()
-				local newText = ValueLabel.Text
-				if newText ~= "" and not tonumber(newText) then
-					-- Reset text to the previous valid value if not a number
-					ValueLabel.Text = tostring(Value)
-				end
-			end)
+		-- Invoke callback with the new value
+		pcall(function()
+			callback(newValue)
+		end)
+
+		-- If enter was not pressed, reset text to the latest valid value
+		if not enterPressed then
+			ValueLabel.Text = tostring(Value)
 		end
+	else
+		-- If input is invalid, reset the text to the previous valid value
+		ValueLabel.Text = tostring(Value)
+	end
+end
+
 		
 		function Content.CreateTextbox(textboxname, callback)
 			textboxname = textboxname or "Textbox"
@@ -910,31 +923,77 @@ function Lib:DrawWindow(LibaryTitle)
 
 			UICorner_5.Parent = TextboxInput
 			
-			TextboxInput.FocusLost:Connect(function(EnterPressed)
-				Textbox.MouseEnter:Connect(function()
-					game.TweenService:Create(Textbox, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-						BackgroundTransparency = 0.85
-					}):Play()
+local uis = game:GetService("UserInputService")
 
-					game.TweenService:Create(TextboxLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-						TextColor3 = Color3.fromRGB(255, 255, 255)
-					}):Play()
-				end)
-				if EnterPressed then 
-					callback(TextboxInput.Text)
-					TextboxInput.Text = ""  -- Clear the TextBox after processing
-				end
-				
-				Textbox.MouseLeave:Connect(function()
-					game.TweenService:Create(Textbox, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-						BackgroundTransparency = 0.95
-					}):Play()
+TextboxInput.FocusLost:Connect(function(EnterPressed)
+	-- Handle mouse hover for desktop
+	Textbox.MouseEnter:Connect(function()
+		game.TweenService:Create(Textbox, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+			BackgroundTransparency = 0.85
+		}):Play()
 
-					game.TweenService:Create(TextboxLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-						TextColor3 = Color3.fromRGB(176, 176, 176)
-					}):Play()
-				end)
-			end)
+		game.TweenService:Create(TextboxLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+			TextColor3 = Color3.fromRGB(255, 255, 255)
+		}):Play()
+	end)
+
+	if EnterPressed then 
+		callback(TextboxInput.Text)
+		TextboxInput.Text = ""  -- Clear the TextBox after processing
+	end
+
+	Textbox.MouseLeave:Connect(function()
+		game.TweenService:Create(Textbox, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+			BackgroundTransparency = 0.95
+		}):Play()
+
+		game.TweenService:Create(TextboxLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+			TextColor3 = Color3.fromRGB(176, 176, 176)
+		}):Play()
+	end)
+end)
+
+-- Mobile support for touch interactions
+uis.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch then
+		local touchPos = input.Position
+		
+		-- Check if the touch is within the Textbox bounds
+		if touchPos.X >= Textbox.AbsolutePosition.X and touchPos.X <= (Textbox.AbsolutePosition.X + Textbox.AbsoluteSize.X)
+			and touchPos.Y >= Textbox.AbsolutePosition.Y and touchPos.Y <= (Textbox.AbsolutePosition.Y + Textbox.AbsoluteSize.Y) then
+
+			-- Trigger hover-like effect when touched
+			game.TweenService:Create(Textbox, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+				BackgroundTransparency = 0.85
+			}):Play()
+
+			game.TweenService:Create(TextboxLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+				TextColor3 = Color3.fromRGB(255, 255, 255)
+			}):Play()
+		end
+	end
+end)
+
+uis.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch then
+		local touchPos = input.Position
+		
+		-- Check if the touch ends outside the Textbox
+		if touchPos.X < Textbox.AbsolutePosition.X or touchPos.X > (Textbox.AbsolutePosition.X + Textbox.AbsoluteSize.X)
+			or touchPos.Y < Textbox.AbsolutePosition.Y or touchPos.Y > (Textbox.AbsolutePosition.Y + Textbox.AbsoluteSize.Y) then
+
+			-- Trigger leave-like effect when touch ends
+			game.TweenService:Create(Textbox, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+				BackgroundTransparency = 0.95
+			}):Play()
+
+			game.TweenService:Create(TextboxLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+				TextColor3 = Color3.fromRGB(176, 176, 176)
+			}):Play()
+		end
+	end
+end)
+
 		end
 		
 		function Content.CreateLabel(lbltext)
