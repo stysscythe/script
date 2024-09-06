@@ -84,7 +84,7 @@ function Lib:DrawWindow(LibaryTitle)
 	--Properties:
 
 	BLACKOUT.Name = "BLACKOUT"
-	BLACKOUT.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	BLACKOUT.Parent = game.CoreGui
 	BLACKOUT.ResetOnSpawn = false
 
 	Window.Name = "Window"
@@ -107,7 +107,7 @@ function Lib:DrawWindow(LibaryTitle)
 
 	function Lib:ToggleMobileUI()
 		if Window.Visible then
-			local ClickSound = 	Instance.new("Sound")
+			local ClickSound = Instance.new("Sound")
 
 			ClickSound.Parent = Window
 			ClickSound.SoundId = "rbxassetid://552900451"
@@ -122,7 +122,7 @@ function Lib:DrawWindow(LibaryTitle)
 
 			ClickSound:Destroy()
 		else
-			local ClickSound = 	Instance.new("Sound")
+			local ClickSound = Instance.new("Sound")
 
 			ClickSound.Parent = Window
 			ClickSound.SoundId = "rbxassetid://552900451"
