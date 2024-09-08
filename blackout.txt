@@ -1008,7 +1008,7 @@ function Lib:DrawWindow(LibaryTitle)
 	ToggleMobile.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ToggleMobile.BorderSizePixel = 0
 	ToggleMobile.Position = UDim2.new(0.780073822, 0, 0.204260647, 0)
-	ToggleMobile.Size = UDim2.new(0.0387192853, 0, 0.0651629046, 0)
+	ToggleMobile.Size = UDim2.new(0.1, 0, 0.1, 0)
 	ToggleMobile.Image = "rbxassetid://12072054746"
 	ToggleMobile.Draggable = true
 
@@ -1021,7 +1021,7 @@ function Lib:DrawWindow(LibaryTitle)
 	ShadowImage.AnchorPoint = Vector2.new(0.5, 0.5)
 	ShadowImage.BackgroundTransparency = 1.000
 	ShadowImage.Position = UDim2.new(0.5, 0, 0.5, 0)
-	ShadowImage.Size = UDim2.new(1.5, 0, 1.5, 0)
+	ShadowImage.Size = UDim2.new(0.1, 0, 0.1, 0)
 	ShadowImage.ZIndex = 0
 	ShadowImage.Image = "rbxassetid://16389697796"
 	ShadowImage.ImageColor3 = Color3.fromRGB(0, 0, 0)
