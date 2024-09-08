@@ -335,7 +335,6 @@ function Lib:DrawWindow(LibaryTitle)
 
 			end
 
-			print(TabName)
 		end)
 
 		local Content = {}
@@ -652,10 +651,10 @@ function Lib:DrawWindow(LibaryTitle)
 			end)
 		end
 
-		function Content.CreateSlider(sliderttl, minvalue, maxvalue, callback)
+		function Content.CreateSlider(sliderttl, min, max, start, callback)
 			sliderttl = sliderttl or "Slider"
-			minvalue = minvalue or 1
-			maxvalue = maxvalue or 25
+			min = min or 1
+			max = max or 25
 			callback = callback or function() end
 
 			local Slider = Instance.new("Frame")
@@ -718,11 +717,23 @@ function Lib:DrawWindow(LibaryTitle)
 			ValueLabel.Selectable = false
 			ValueLabel.Size = UDim2.new(0.144372806, 0, 0.670663297, 0)
 			ValueLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
-			ValueLabel.Text = minvalue
+			ValueLabel.Text = tostring(start and math.floor((start / max) * (max - min) + min) or 0)
 			ValueLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
 			ValueLabel.TextScaled = true
 			ValueLabel.TextSize = 26.000
 			ValueLabel.TextWrapped = true
+			ValueLabel.FocusLost:Connect(function()
+				local value = tonumber(ValueLabel.Text)
+				if value then
+					value = math.clamp(value, min, max)
+					local pos = (value - min) / (max - min)
+					SliderFill:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
+					ValueLabel.Text = tostring(value)
+					pcall(callback, value)
+				else
+					ValueLabel.Text = tostring(math.floor((start or 0) / max * (max - min) + min))
+				end
+			end)
 
 			UIAspectRatioConstraint_11.Parent = ValueLabel
 			UIAspectRatioConstraint_11.AspectRatio = 1.252
@@ -759,8 +770,7 @@ function Lib:DrawWindow(LibaryTitle)
 			SliderFill.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			SliderFill.BorderSizePixel = 0
 			SliderFill.ClipsDescendants = true
-			SliderFill.Position = UDim2.new(0, 1, 0, 0)
-			SliderFill.Size = UDim2.new(0, 0, 0, 9)
+			SliderFill.Size = UDim2.new((start or 0) / max, 0, 0, 9)
 
 			SliderCorner_2.Name = "SliderCorner"
 			SliderCorner_2.Parent = SliderFill
@@ -773,161 +783,111 @@ function Lib:DrawWindow(LibaryTitle)
 
 			UIAspectRatioConstraint_13.Parent = SliderTrigger
 			UIAspectRatioConstraint_13.AspectRatio = 27.889
+		end
+		
+		function Content.CreateTextbox(textboxname, callback)
+			textboxname = textboxname or "Textbox"
+			callback = callback or function() end
 
-			local mouse = game.Players.LocalPlayer:GetMouse()
+			local Textbox = Instance.new("Frame")
+			local TextboxLabel = Instance.new("TextLabel")
+			local UITextSizeConstraint_6 = Instance.new("UITextSizeConstraint")
+			local UICorner_4 = Instance.new("UICorner")
+			local TextboxInput = Instance.new("TextBox")
+			local UITextSizeConstraint_7 = Instance.new("UITextSizeConstraint")
+			local UICorner_5 = Instance.new("UICorner")
+
+			Textbox.Name = "Textbox"
+			Textbox.Parent = ContentHolder
+			Textbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Textbox.BackgroundTransparency = 0.950
+			Textbox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Textbox.BorderSizePixel = 0
+			Textbox.Position = UDim2.new(0.495624691, 0, 0, 0)
+			Textbox.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
+
+			TextboxLabel.Name = "TextboxLabel"
+			TextboxLabel.Parent = Textbox
+			TextboxLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextboxLabel.BackgroundTransparency = 1.000
+			TextboxLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextboxLabel.BorderSizePixel = 0
+			TextboxLabel.Position = UDim2.new(0.0457746238, 0, 0.0559202395, 0)
+			TextboxLabel.Size = UDim2.new(0.699999928, 0, 0.930000424, 0)
+			TextboxLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			TextboxLabel.Text = textboxname
+			TextboxLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
+			TextboxLabel.TextScaled = true
+			TextboxLabel.TextSize = 26.000
+			TextboxLabel.TextWrapped = true
+			TextboxLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			UITextSizeConstraint_6.Parent = TextboxLabel
+			UITextSizeConstraint_6.MaxTextSize = 31
+
+			UICorner_4.Parent = Textbox
+
+			TextboxInput.Name = "TextboxInput"
+			TextboxInput.Parent = Textbox
+			TextboxInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextboxInput.BackgroundTransparency = 0.950
+			TextboxInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextboxInput.BorderSizePixel = 0
+			TextboxInput.Position = UDim2.new(0.797221601, 0, 0.159592077, 0)
+			TextboxInput.Size = UDim2.new(0.182717696, 0, 0.648069203, 0)
+			TextboxInput.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			TextboxInput.PlaceholderText = "Input"
+			TextboxInput.Text = ""
+			TextboxInput.TextColor3 = Color3.fromRGB(193, 193, 193)
+			TextboxInput.TextScaled = true
+			TextboxInput.TextSize = 14.000
+			TextboxInput.TextWrapped = true
+
+			UITextSizeConstraint_7.Parent = TextboxInput
+			UITextSizeConstraint_7.MaxTextSize = 14
+
+			UICorner_5.Parent = TextboxInput
+
 			local uis = game:GetService("UserInputService")
-			local Value;
 
-			local function updateSlider(inputPosition)
-				Value = math.floor((((tonumber(maxvalue) - tonumber(minvalue)) / 206) * SliderFill.AbsoluteSize.X) + tonumber(minvalue)) or 0
-				pcall(function()
-					callback(Value)
-				end)
-				SliderFill:TweenSize(UDim2.new(0, math.clamp(inputPosition - SliderFill.AbsolutePosition.X, 0, 206), 0, 7), "InOut", "Linear", 0.15, true)
-				ValueLabel.Text = Value
-			end
-
-			SliderTrigger.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					-- Show the value label
-					game.TweenService:Create(ValueLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-						TextTransparency = 0
+			TextboxInput.FocusLost:Connect(function(EnterPressed)
+				-- Handle mouse hover for desktop
+				Textbox.MouseEnter:Connect(function()
+					game.TweenService:Create(Textbox, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.85
 					}):Play()
 
-					-- Update the slider based on input position
-					updateSlider(input.Position.X)
+					game.TweenService:Create(TextboxLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(255, 255, 255)
+					}):Play()
+				end)
 
-					-- Detect movement for both mouse and touch
-					moveconnection = uis.InputChanged:Connect(function(movementInput)
-						if movementInput.UserInputType == Enum.UserInputType.MouseMovement or movementInput.UserInputType == Enum.UserInputType.Touch then
-							updateSlider(movementInput.Position.X)
-						end
-					end)
-
-					-- Handle releasing the input
-					releaseconnection = uis.InputEnded:Connect(function(endedInput)
-						if endedInput.UserInputType == Enum.UserInputType.MouseButton1 or endedInput.UserInputType == Enum.UserInputType.Touch then
-							-- Final update for the slider
-							updateSlider(endedInput.Position.X)
-
-							-- Hide the value label
-							game.TweenService:Create(ValueLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-								TextTransparency = 1
-							}):Play()
-
-							-- Disconnect connections
-							moveconnection:Disconnect()
-							releaseconnection:Disconnect()
-						end
-					end)
+				if EnterPressed then 
+					callback(TextboxInput.Text)
+					TextboxInput.Text = ""  -- Clear the TextBox after processing
 				end
+
+				Textbox.MouseLeave:Connect(function()
+					game.TweenService:Create(Textbox, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						BackgroundTransparency = 0.95
+					}):Play()
+
+					game.TweenService:Create(TextboxLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+						TextColor3 = Color3.fromRGB(176, 176, 176)
+					}):Play()
+				end)
 			end)
 
+			-- Mobile support for touch interactions
+			uis.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					local touchPos = input.Position
 
-			ValueLabel.FocusLost:Connect(function(enterPressed)
-				-- This works for desktop when Enter is pressed or focus is lost
-				processInput(ValueLabel.Text, enterPressed)
-			end)
+					-- Check if the touch is within the Textbox bounds
+					if touchPos.X >= Textbox.AbsolutePosition.X and touchPos.X <= (Textbox.AbsolutePosition.X + Textbox.AbsoluteSize.X)
+						and touchPos.Y >= Textbox.AbsolutePosition.Y and touchPos.Y <= (Textbox.AbsolutePosition.Y + Textbox.AbsoluteSize.Y) then
 
-			-- For mobile support, handle the input every time the text changes
-			ValueLabel:GetPropertyChangedSignal("Text"):Connect(function()
-				processInput(ValueLabel.Text, true) -- Process input continuously for mobile devices
-			end)
-
-			-- Function to handle value input processing
-			function processInput(newText, enterPressed)
-				local newValue = tonumber(newText) or tonumber(minvalue)
-
-				-- Check if the input is valid
-				if newValue and newValue >= tonumber(minvalue) and newValue <= tonumber(maxvalue) then
-					-- Update slider position based on the TextBox input
-					local sliderPos = math.clamp(((newValue - tonumber(minvalue)) / (tonumber(maxvalue) - tonumber(minvalue))) * 206, 0, 206)
-					SliderFill:TweenSize(UDim2.new(0, sliderPos, 0, 7), "InOut", "Linear", 0.15, true)
-
-					-- Invoke callback with the new value
-					pcall(function()
-						callback(newValue)
-					end)
-
-					-- If enter was not pressed, reset text to the latest valid value
-					if not enterPressed then
-						ValueLabel.Text = tostring(Value)
-					end
-				else
-					-- If input is invalid, reset the text to the previous valid value
-					ValueLabel.Text = tostring(Value)
-				end
-			end
-
-
-			function Content.CreateTextbox(textboxname, callback)
-				textboxname = textboxname or "Textbox"
-				callback = callback or function() end
-
-				local Textbox = Instance.new("Frame")
-				local TextboxLabel = Instance.new("TextLabel")
-				local UITextSizeConstraint_6 = Instance.new("UITextSizeConstraint")
-				local UICorner_4 = Instance.new("UICorner")
-				local TextboxInput = Instance.new("TextBox")
-				local UITextSizeConstraint_7 = Instance.new("UITextSizeConstraint")
-				local UICorner_5 = Instance.new("UICorner")
-
-				Textbox.Name = "Textbox"
-				Textbox.Parent = ContentHolder
-				Textbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				Textbox.BackgroundTransparency = 0.950
-				Textbox.BorderColor3 = Color3.fromRGB(0, 0, 0)
-				Textbox.BorderSizePixel = 0
-				Textbox.Position = UDim2.new(0.495624691, 0, 0, 0)
-				Textbox.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
-
-				TextboxLabel.Name = "TextboxLabel"
-				TextboxLabel.Parent = Textbox
-				TextboxLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				TextboxLabel.BackgroundTransparency = 1.000
-				TextboxLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-				TextboxLabel.BorderSizePixel = 0
-				TextboxLabel.Position = UDim2.new(0.0457746238, 0, 0.0559202395, 0)
-				TextboxLabel.Size = UDim2.new(0.699999928, 0, 0.930000424, 0)
-				TextboxLabel.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
-				TextboxLabel.Text = textboxname
-				TextboxLabel.TextColor3 = Color3.fromRGB(176, 176, 176)
-				TextboxLabel.TextScaled = true
-				TextboxLabel.TextSize = 26.000
-				TextboxLabel.TextWrapped = true
-				TextboxLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-				UITextSizeConstraint_6.Parent = TextboxLabel
-				UITextSizeConstraint_6.MaxTextSize = 31
-
-				UICorner_4.Parent = Textbox
-
-				TextboxInput.Name = "TextboxInput"
-				TextboxInput.Parent = Textbox
-				TextboxInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				TextboxInput.BackgroundTransparency = 0.950
-				TextboxInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
-				TextboxInput.BorderSizePixel = 0
-				TextboxInput.Position = UDim2.new(0.797221601, 0, 0.159592077, 0)
-				TextboxInput.Size = UDim2.new(0.182717696, 0, 0.648069203, 0)
-				TextboxInput.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
-				TextboxInput.PlaceholderText = "Input"
-				TextboxInput.Text = ""
-				TextboxInput.TextColor3 = Color3.fromRGB(193, 193, 193)
-				TextboxInput.TextScaled = true
-				TextboxInput.TextSize = 14.000
-				TextboxInput.TextWrapped = true
-
-				UITextSizeConstraint_7.Parent = TextboxInput
-				UITextSizeConstraint_7.MaxTextSize = 14
-
-				UICorner_5.Parent = TextboxInput
-
-				local uis = game:GetService("UserInputService")
-
-				TextboxInput.FocusLost:Connect(function(EnterPressed)
-					-- Handle mouse hover for desktop
-					Textbox.MouseEnter:Connect(function()
+						-- Trigger hover-like effect when touched
 						game.TweenService:Create(Textbox, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
 							BackgroundTransparency = 0.85
 						}):Play()
@@ -935,14 +895,19 @@ function Lib:DrawWindow(LibaryTitle)
 						game.TweenService:Create(TextboxLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
 							TextColor3 = Color3.fromRGB(255, 255, 255)
 						}):Play()
-					end)
-
-					if EnterPressed then 
-						callback(TextboxInput.Text)
-						TextboxInput.Text = ""  -- Clear the TextBox after processing
 					end
+				end
+			end)
 
-					Textbox.MouseLeave:Connect(function()
+			uis.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					local touchPos = input.Position
+
+					-- Check if the touch ends outside the Textbox
+					if touchPos.X < Textbox.AbsolutePosition.X or touchPos.X > (Textbox.AbsolutePosition.X + Textbox.AbsoluteSize.X)
+						or touchPos.Y < Textbox.AbsolutePosition.Y or touchPos.Y > (Textbox.AbsolutePosition.Y + Textbox.AbsoluteSize.Y) then
+
+						-- Trigger leave-like effect when touch ends
 						game.TweenService:Create(Textbox, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
 							BackgroundTransparency = 0.95
 						}):Play()
@@ -950,169 +915,136 @@ function Lib:DrawWindow(LibaryTitle)
 						game.TweenService:Create(TextboxLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
 							TextColor3 = Color3.fromRGB(176, 176, 176)
 						}):Play()
-					end)
-				end)
-
-				-- Mobile support for touch interactions
-				uis.InputBegan:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.Touch then
-						local touchPos = input.Position
-
-						-- Check if the touch is within the Textbox bounds
-						if touchPos.X >= Textbox.AbsolutePosition.X and touchPos.X <= (Textbox.AbsolutePosition.X + Textbox.AbsoluteSize.X)
-							and touchPos.Y >= Textbox.AbsolutePosition.Y and touchPos.Y <= (Textbox.AbsolutePosition.Y + Textbox.AbsoluteSize.Y) then
-
-							-- Trigger hover-like effect when touched
-							game.TweenService:Create(Textbox, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-								BackgroundTransparency = 0.85
-							}):Play()
-
-							game.TweenService:Create(TextboxLabel, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-								TextColor3 = Color3.fromRGB(255, 255, 255)
-							}):Play()
-						end
 					end
-				end)
-
-				uis.InputEnded:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.Touch then
-						local touchPos = input.Position
-
-						-- Check if the touch ends outside the Textbox
-						if touchPos.X < Textbox.AbsolutePosition.X or touchPos.X > (Textbox.AbsolutePosition.X + Textbox.AbsoluteSize.X)
-							or touchPos.Y < Textbox.AbsolutePosition.Y or touchPos.Y > (Textbox.AbsolutePosition.Y + Textbox.AbsoluteSize.Y) then
-
-							-- Trigger leave-like effect when touch ends
-							game.TweenService:Create(Textbox, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-								BackgroundTransparency = 0.95
-							}):Play()
-
-							game.TweenService:Create(TextboxLabel, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-								TextColor3 = Color3.fromRGB(176, 176, 176)
-							}):Play()
-						end
-					end
-				end)
-
-			end
-			
-			end
-
-			function Content.CreateLabel(lbltext)
-				lbltext = lbltext or "Label"
-
-				local Label = Instance.new("Frame")
-				local LabelText = Instance.new("TextLabel")
-				local UITextSizeConstraint_10 = Instance.new("UITextSizeConstraint")
-				local UICorner_6 = Instance.new("UICorner")
-
-				Label.Name = "Label"
-				Label.Parent = ContentHolder
-				Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				Label.BackgroundTransparency = 0.950
-				Label.BorderColor3 = Color3.fromRGB(0, 0, 0)
-				Label.BorderSizePixel = 0
-				Label.Position = UDim2.new(0.495624691, 0, 0, 0)
-				Label.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
-
-				LabelText.Name = "LabelText"
-				LabelText.Parent = Label
-				LabelText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				LabelText.BackgroundTransparency = 1.000
-				LabelText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-				LabelText.BorderSizePixel = 0
-				LabelText.Position = UDim2.new(0.0457749367, 0, 0.0559198931, 0)
-				LabelText.Size = UDim2.new(0.934164584, 0, 0.930000424, 0)
-				LabelText.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
-				LabelText.TextColor3 = Color3.fromRGB(176, 176, 176)
-				LabelText.TextScaled = true
-				LabelText.TextSize = 26.000
-				LabelText.TextWrapped = true
-				LabelText.Text = lbltext
-
-				UITextSizeConstraint_10.Parent = LabelText
-				UITextSizeConstraint_10.MaxTextSize = 31
-
-				UICorner_6.Parent = Label
-			end
-			return Content
+				end
+			end)
 		end
 
 
-		TabScroller.Name = "TabScroller"
-		TabScroller.Parent = Navigator
-		TabScroller.Active = true
-		TabScroller.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		TabScroller.BackgroundTransparency = 1.000
-		TabScroller.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		TabScroller.BorderSizePixel = 0
-		TabScroller.Position = UDim2.new(0.030765783, 0, -0.00365350395, 0)
-		TabScroller.Size = UDim2.new(0.961111009, 0, 0.996712923, 0)
-		TabScroller.ScrollBarImageTransparency = 1
+		function Content.CreateLabel(lbltext)
+			lbltext = lbltext or "Label"
 
-		UIPadding_2.Parent = TabScroller
-		UIPadding_2.PaddingLeft = UDim.new(0.0500000007, 0)
-		UIPadding_2.PaddingRight = UDim.new(0.0500000007, 0)
-		UIPadding_2.PaddingTop = UDim.new(0, 12)
+			local Label = Instance.new("Frame")
+			local LabelText = Instance.new("TextLabel")
+			local UITextSizeConstraint_10 = Instance.new("UITextSizeConstraint")
+			local UICorner_6 = Instance.new("UICorner")
 
-		UIListLayout_2.Parent = TabScroller
-		UIListLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
-		UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
-		UIListLayout_2.Padding = UDim.new(0, 1)
+			Label.Name = "Label"
+			Label.Parent = ContentHolder
+			Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Label.BackgroundTransparency = 0.950
+			Label.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Label.BorderSizePixel = 0
+			Label.Position = UDim2.new(0.495624691, 0, 0, 0)
+			Label.Size = UDim2.new(0.850000024, 0, 0.075000003, 0)
 
-		WindowCorner.CornerRadius = UDim.new(0, 15)
-		WindowCorner.Name = "WindowCorner"
-		WindowCorner.Parent = Window
+			LabelText.Name = "LabelText"
+			LabelText.Parent = Label
+			LabelText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			LabelText.BackgroundTransparency = 1.000
+			LabelText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			LabelText.BorderSizePixel = 0
+			LabelText.Position = UDim2.new(0.0457749367, 0, 0.0559198931, 0)
+			LabelText.Size = UDim2.new(0.934164584, 0, 0.930000424, 0)
+			LabelText.FontFace = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal);
+			LabelText.TextColor3 = Color3.fromRGB(176, 176, 176)
+			LabelText.TextScaled = true
+			LabelText.TextSize = 26.000
+			LabelText.TextWrapped = true
+			LabelText.Text = lbltext
 
-		Window_ShadowPng.Name = "Window_ShadowPng"
-		Window_ShadowPng.Parent = Window
-		Window_ShadowPng.BackgroundTransparency = 1.000
-		Window_ShadowPng.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		Window_ShadowPng.Position = UDim2.new(-0.076305218, 0, -0.0456026047, 0)
-		Window_ShadowPng.Size = UDim2.new(1.15060246, 0, 1.2149837, 0)
-		Window_ShadowPng.ZIndex = -1
-		Window_ShadowPng.Image = "rbxassetid://313486536"
+			UITextSizeConstraint_10.Parent = LabelText
+			UITextSizeConstraint_10.MaxTextSize = 31
 
-		UIAspectRatioConstraint_17.Parent = Window_ShadowPng
-		UIAspectRatioConstraint_17.AspectRatio = 1.536
-
-		UIAspectRatioConstraint_18.Parent = Window
-		UIAspectRatioConstraint_18.AspectRatio = 1.622
-
-		ToggleMobile.Name = "Toggle Mobile"
-		ToggleMobile.Parent = BLACKOUT
-		ToggleMobile.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
-		ToggleMobile.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		ToggleMobile.BorderSizePixel = 0
-		ToggleMobile.Position = UDim2.new(0.780073822, 0, 0.204260647, 0)
-		ToggleMobile.Size = UDim2.new(0.0387192853, 0, 0.0651629046, 0)
-		ToggleMobile.Image = "rbxassetid://12072054746"
-		ToggleMobile.Draggable = true
-
-		WindowCorner_2.CornerRadius = UDim.new(0, 5)
-		WindowCorner_2.Name = "WindowCorner"
-		WindowCorner_2.Parent = ToggleMobile
-
-		ShadowImage.Name = "ShadowImage"
-		ShadowImage.Parent = ToggleMobile
-		ShadowImage.AnchorPoint = Vector2.new(0.5, 0.5)
-		ShadowImage.BackgroundTransparency = 1.000
-		ShadowImage.Position = UDim2.new(0.5, 0, 0.5, 0)
-		ShadowImage.Size = UDim2.new(1.5, 0, 1.5, 0)
-		ShadowImage.ZIndex = 0
-		ShadowImage.Image = "rbxassetid://16389697796"
-		ShadowImage.ImageColor3 = Color3.fromRGB(0, 0, 0)
-
-		UIAspectRatioConstraint_19.Parent = ToggleMobile
-		UIAspectRatioConstraint_19.AspectRatio = 1.000
-
-		ToggleMobile.TouchTap:Connect(function()
-			Lib:ToggleMobileUI()
-		end)
-		ToggleMobile.MouseButton1Click:Connect(function()
-			Lib:ToggleMobileUI()
-		end)
-
-		return TabSystem
+			UICorner_6.Parent = Label
+		end
+		return Content
 	end
+
+
+	TabScroller.Name = "TabScroller"
+	TabScroller.Parent = Navigator
+	TabScroller.Active = true
+	TabScroller.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	TabScroller.BackgroundTransparency = 1.000
+	TabScroller.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	TabScroller.BorderSizePixel = 0
+	TabScroller.Position = UDim2.new(0.030765783, 0, -0.00365350395, 0)
+	TabScroller.Size = UDim2.new(0.961111009, 0, 0.996712923, 0)
+	TabScroller.ScrollBarImageTransparency = 1
+
+	UIPadding_2.Parent = TabScroller
+	UIPadding_2.PaddingLeft = UDim.new(0.0500000007, 0)
+	UIPadding_2.PaddingRight = UDim.new(0.0500000007, 0)
+	UIPadding_2.PaddingTop = UDim.new(0, 12)
+
+	UIListLayout_2.Parent = TabScroller
+	UIListLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
+	UIListLayout_2.Padding = UDim.new(0, 1)
+
+	WindowCorner.CornerRadius = UDim.new(0, 15)
+	WindowCorner.Name = "WindowCorner"
+	WindowCorner.Parent = Window
+
+	Window_ShadowPng.Name = "Window_ShadowPng"
+	Window_ShadowPng.Parent = Window
+	Window_ShadowPng.BackgroundTransparency = 1.000
+	Window_ShadowPng.BorderColor3 = Color3.fromRGB(27, 42, 53)
+	Window_ShadowPng.Position = UDim2.new(-0.076305218, 0, -0.0456026047, 0)
+	Window_ShadowPng.Size = UDim2.new(1.15060246, 0, 1.2149837, 0)
+	Window_ShadowPng.ZIndex = -1
+	Window_ShadowPng.Image = "rbxassetid://313486536"
+
+	UIAspectRatioConstraint_17.Parent = Window_ShadowPng
+	UIAspectRatioConstraint_17.AspectRatio = 1.536
+
+	UIAspectRatioConstraint_18.Parent = Window
+	UIAspectRatioConstraint_18.AspectRatio = 1.622
+
+	ToggleMobile.Name = "Toggle Mobile"
+	ToggleMobile.Parent = BLACKOUT
+	ToggleMobile.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	ToggleMobile.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ToggleMobile.BorderSizePixel = 0
+	ToggleMobile.Position = UDim2.new(0.780073822, 0, 0.204260647, 0)
+	ToggleMobile.Size = UDim2.new(0.0387192853, 0, 0.0651629046, 0)
+	ToggleMobile.Image = "rbxassetid://12072054746"
+	ToggleMobile.Draggable = true
+
+	WindowCorner_2.CornerRadius = UDim.new(0, 5)
+	WindowCorner_2.Name = "WindowCorner"
+	WindowCorner_2.Parent = ToggleMobile
+
+	ShadowImage.Name = "ShadowImage"
+	ShadowImage.Parent = ToggleMobile
+	ShadowImage.AnchorPoint = Vector2.new(0.5, 0.5)
+	ShadowImage.BackgroundTransparency = 1.000
+	ShadowImage.Position = UDim2.new(0.5, 0, 0.5, 0)
+	ShadowImage.Size = UDim2.new(1.5, 0, 1.5, 0)
+	ShadowImage.ZIndex = 0
+	ShadowImage.Image = "rbxassetid://16389697796"
+	ShadowImage.ImageColor3 = Color3.fromRGB(0, 0, 0)
+
+	UIAspectRatioConstraint_19.Parent = ToggleMobile
+	UIAspectRatioConstraint_19.AspectRatio = 1.000
+
+	local UserInputService = game:GetService("UserInputService")
+
+	ToggleMobile.MouseButton1Click:Connect(function()
+		if UserInputService.TouchEnabled then
+			Lib:ToggleMobileUI()
+		else
+			return nil
+		end
+	end)
+
+
+	ToggleMobile.MouseButton1Click:Connect(function()
+		Lib:ToggleMobileUI()
+	end)
+
+
+	return TabSystem
+end
 return Lib
