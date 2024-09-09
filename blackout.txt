@@ -84,7 +84,7 @@ function Lib:DrawWindow(LibaryTitle)
 	--Properties:
 
 	BLACKOUT.Name = "BLACKOUT"
-	BLACKOUT.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	BLACKOUT.Parent = game.CoreGui
 	BLACKOUT.ResetOnSpawn = false
 
 	Window.Name = "Window"
@@ -114,7 +114,7 @@ function Lib:DrawWindow(LibaryTitle)
 			ClickSound.Volume = 2 
 			ClickSound.Pitch = 1.2
 
-			Window.Visible = false
+			game.CoreGui.BLACKOUT.Window.Visible = false
 
 			ClickSound:Play()
 
@@ -129,7 +129,7 @@ function Lib:DrawWindow(LibaryTitle)
 			ClickSound.Volume = 2 
 			ClickSound.Pitch = 1
 
-			Window.Visible = true
+			game.CoreGui.BLACKOUT.Window.Visible = true
 
 			ClickSound:Play()
 
@@ -722,18 +722,36 @@ function Lib:DrawWindow(LibaryTitle)
 			ValueLabel.TextScaled = true
 			ValueLabel.TextSize = 26.000
 			ValueLabel.TextWrapped = true
+			local UserInputService = game:GetService("UserInputService")
+
 			ValueLabel.FocusLost:Connect(function()
-				local value = tonumber(ValueLabel.Text)
-				if value then
-					value = math.clamp(value, min, max)
-					local pos = (value - min) / (max - min)
-					SliderFill:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
-					ValueLabel.Text = tostring(value)
-					pcall(callback, value)
-				else
-					ValueLabel.Text = tostring(math.floor((start or 0) / max * (max - min) + min))
-				end
-			end)
+			    local value = tonumber(ValueLabel.Text)
+			    if value then
+			        value = math.clamp(value, min, max)
+ 			       local pos = (value - min) / (max - min)
+   			     SliderFill:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
+    			    ValueLabel.Text = tostring(value)
+      			  pcall(callback, value)
+ 			   else
+    			    ValueLabel.Text = tostring(math.floor((start or 0) / max * (max - min) + min))
+   			 end
+		  end)
+
+			if UserInputService.TouchEnabled then
+ 			   ValueLabel:GetPropertyChangedSignal("Text"):Connect(function()
+ 			       local value = tonumber(ValueLabel.Text)
+  			      if value then
+     			       value = math.clamp(value, min, max)
+   			         local pos = (value - min) / (max - min)
+       			     SliderFill:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
+       			     ValueLabel.Text = tostring(value)
+         			   pcall(callback, value)
+      			  else
+       			    ValueLabel.Text = tostring(math.floor((start or 0) / max * (max - min) + min))
+      			  end
+   			 end)
+		end
+
 
 			UIAspectRatioConstraint_11.Parent = ValueLabel
 			UIAspectRatioConstraint_11.AspectRatio = 1.252
@@ -1035,15 +1053,9 @@ function Lib:DrawWindow(LibaryTitle)
 		if UserInputService.TouchEnabled then
 			Lib:ToggleMobileUI()
 		else
-			return nil
+			Lib:ToggleMobileUI()
 		end
 	end)
-
-
-	ToggleMobile.MouseButton1Click:Connect(function()
-		Lib:ToggleMobileUI()
-	end)
-
 
 	return TabSystem
 end
