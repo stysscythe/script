@@ -114,7 +114,7 @@ function Lib:DrawWindow(LibaryTitle)
 			ClickSound.Volume = 2 
 			ClickSound.Pitch = 1.2
 
-			game.CoreGui.BLACKOUT.Window.Visible = false
+			Window.Visible = false
 
 			ClickSound:Play()
 
@@ -129,7 +129,7 @@ function Lib:DrawWindow(LibaryTitle)
 			ClickSound.Volume = 2 
 			ClickSound.Pitch = 1
 
-			game.CoreGui.BLACKOUT.Window.Visible = true
+			Window.Visible = true
 
 			ClickSound:Play()
 
@@ -656,6 +656,7 @@ function Lib:DrawWindow(LibaryTitle)
 			min = min or 1
 			max = max or 25
 			callback = callback or function() end
+			local dragging = false
 
 			local Slider = Instance.new("Frame")
 			local SliderCorner = Instance.new("UICorner")
@@ -722,35 +723,34 @@ function Lib:DrawWindow(LibaryTitle)
 			ValueLabel.TextScaled = true
 			ValueLabel.TextSize = 26.000
 			ValueLabel.TextWrapped = true
-			local UserInputService = game:GetService("UserInputService")
+			
 
-			ValueLabel.FocusLost:Connect(function()
-			    local value = tonumber(ValueLabel.Text)
-			    if value then
-			        value = math.clamp(value, min, max)
- 			       local pos = (value - min) / (max - min)
-   			     SliderFill:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
-    			    ValueLabel.Text = tostring(value)
-      			  pcall(callback, value)
- 			   else
-    			    ValueLabel.Text = tostring(math.floor((start or 0) / max * (max - min) + min))
-   			 end
-		  end)
+			local function updateValue()
+				local value = tonumber(ValueLabel.Text)
+				if value then
+					value = math.clamp(value, min, max)
+					local pos = (value - min) / (max - min)
+					SliderFill:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
+					ValueLabel.Text = tostring(value)
+					pcall(callback, value)
+				else
+					local defaultValue = tostring(math.floor((start or 0) / max * (max - min) + min))
+					ValueLabel.Text = defaultValue
+				end
+			end
 
-			if UserInputService.TouchEnabled then
- 			   ValueLabel:GetPropertyChangedSignal("Text"):Connect(function()
- 			       local value = tonumber(ValueLabel.Text)
-  			      if value then
-     			       value = math.clamp(value, min, max)
-   			         local pos = (value - min) / (max - min)
-       			     SliderFill:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
-       			     ValueLabel.Text = tostring(value)
-         			   pcall(callback, value)
-      			  else
-       			    ValueLabel.Text = tostring(math.floor((start or 0) / max * (max - min) + min))
-      			  end
-   			 end)
-		end
+			ValueLabel.FocusLost:Connect(updateValue)
+
+			ValueLabel.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+				end
+			end)
+
+			ValueLabel.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					updateValue()
+				end
+			end)
 
 
 			UIAspectRatioConstraint_11.Parent = ValueLabel
@@ -789,10 +789,7 @@ function Lib:DrawWindow(LibaryTitle)
 			SliderFill.BorderSizePixel = 0
 			SliderFill.ClipsDescendants = true
 			SliderFill.Size = UDim2.new((start or 0) / max, 0, 0, 9)
-
-			SliderCorner_2.Name = "SliderCorner"
-			SliderCorner_2.Parent = SliderFill
-
+			
 			SliderCorner_3.Name = "SliderCorner"
 			SliderCorner_3.Parent = SliderBack
 
@@ -801,6 +798,7 @@ function Lib:DrawWindow(LibaryTitle)
 
 			UIAspectRatioConstraint_13.Parent = SliderTrigger
 			UIAspectRatioConstraint_13.AspectRatio = 27.889
+			
 		end
 		
 		function Content.CreateTextbox(textboxname, callback)
@@ -976,10 +974,9 @@ function Lib:DrawWindow(LibaryTitle)
 
 			UICorner_6.Parent = Label
 		end
+		
 		return Content
-	end
-
-
+end
 	TabScroller.Name = "TabScroller"
 	TabScroller.Parent = Navigator
 	TabScroller.Active = true
