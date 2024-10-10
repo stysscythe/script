@@ -19,22 +19,15 @@ function Library:CreateWindow(windowname,windowinfo)
 	local YepCorner = Instance.new("UICorner")
 	local Close = Instance.new("TextButton")
 
+        hideGui = get_hidden_ui or gethui
+
 	fu8rj82n.Name = "fu8rj82n"
-	fu8rj82n.Parent = game.CoreGui
+	fu8rj82n.Parent = hideGui()
 	fu8rj82n.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	fu8rj82n.ResetOnSpawn = false
  
-	local SynV3 = syn and DrawingImmediate
-	    if (not is_sirhurt_closure) and (not SynV3) and (syn and syn.protect_gui) then
-	        syn.protect_gui(fu8rj82n)
-	        fu8rj82n.Parent = CoreGui
-	    elseif get_hidden_gui or gethui then
-	        local hiddenUI = get_hidden_gui or gethui
-	        fu8rj82n.Parent = hiddenUI()
-	    else
-	        fu8rj82n.Parent = CoreGui
-	    end
 
+	        
 	Frame.Parent = fu8rj82n
 	Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 	Frame.BorderColor3 = Color3.fromRGB(20, 20, 20)
