@@ -585,13 +585,13 @@ local isMobile = UserInputService.TouchEnabled
 local function updateValue()
     local value = tonumber(ValueLabel.Text)
     if value then
-        value = math.clamp(value, min, max)
-        local pos = (value - min) / (max - min)
+        value = math.clamp(value, minvalue, maxvalue)
+        local pos = (value - minvalue) / (maxvalue - minvalue)
         SliderTrail:TweenSize(UDim2.new(pos, 0, 0, 9), "Out", "Sine", 0.1, true)
         SliderNumber.Text = tostring(value)
         pcall(callback, value)
     else
-        local defaultValue = tostring(math.floor((start or 0) / max * (max - min) + min))
+        local defaultValue = tostring(math.floor((start or 0) / maxvalue * (maxvalue - minvalue) + minvalue))
         SliderNumber.Text = defaultValue
     end
 end
