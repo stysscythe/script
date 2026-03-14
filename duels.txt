@@ -390,23 +390,58 @@ local function setInfiniteJump(enabled)
         Refs.Connections.infiniteJump:Disconnect()
         Refs.Connections.infiniteJump = nil 
     end
+    if Refs.Connections.infiniteJumpHold then 
+        Refs.Connections.infiniteJumpHold:Disconnect()
+        Refs.Connections.infiniteJumpHold = nil 
+    end
     
     if not enabled then return end
 
-    Refs.Connections.infiniteJump = RunService.Heartbeat:Connect(function()
-        if not UserInputService:IsKeyDown(Enum.KeyCode.Space) then return end
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    
+    if hum then
+        Refs.Connections.infiniteJump = hum:GetPropertyChangedSignal("Jump"):Connect(function()
+            if not State.infiniteJumpEnabled then return end
+            if not hum.Jump then return end
+            
+            local c = LocalPlayer.Character
+            if not c then return end
+            local hrpLocal = c:FindFirstChild("HumanoidRootPart")
+            if not hrpLocal then return end
+            
+            local now = tick()
+            if now - JumpData.lastJumpTime < 0.15 then return end
+            JumpData.lastJumpTime = now
+            
+            hrpLocal.AssemblyLinearVelocity = Vector3.new(
+                hrpLocal.AssemblyLinearVelocity.X,
+                50,
+                hrpLocal.AssemblyLinearVelocity.Z
+            )
+        end)
+    end
+    
+    Refs.Connections.infiniteJumpHold = RunService.Heartbeat:Connect(function()
+        if not State.infiniteJumpEnabled then return end
+        
+        local spaceHeld = UserInputService:IsKeyDown(Enum.KeyCode.Space)
+        if not spaceHeld then return end
+        
         local now = tick()
-        if now - JumpData.lastJumpTime < 0.1 then return end
-        local char = LocalPlayer.Character
-        if not char then return end
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        local hum = char:FindFirstChild("Humanoid")
-        if not hrp or not hum or hum.Health <= 0 then return end
+        if now - JumpData.lastJumpTime < 0.12 then return end
+        
+        local c = LocalPlayer.Character
+        if not c then return end
+        local hrpLocal = c:FindFirstChild("HumanoidRootPart")
+        local humLocal = c:FindFirstChildOfClass("Humanoid")
+        if not hrpLocal or not humLocal or humLocal.Health <= 0 then return end
+        
         JumpData.lastJumpTime = now
-        hrp.AssemblyLinearVelocity = Vector3.new(
-            hrp.AssemblyLinearVelocity.X,
-            55,
-            hrp.AssemblyLinearVelocity.Z
+        hrpLocal.AssemblyLinearVelocity = Vector3.new(
+            hrpLocal.AssemblyLinearVelocity.X,
+            50,
+            hrpLocal.AssemblyLinearVelocity.Z
         )
     end)
 end
