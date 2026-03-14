@@ -1118,25 +1118,7 @@ Refs.SideButtons.Carry.MouseButton1Click:Connect(function()
     updateSideButtons()
 end)
 
-do
-    local dragging, dragStart, startPos = false, nil, nil
-    Objects.sideButtonsFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = Objects.sideButtonsFrame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
-            end)
-        end
-    end)
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
-            Objects.sideButtonsFrame.Position = UDim2.new(startPos.X.Scale, math.clamp(startPos.X.Offset + delta.X, 0, Config.screenSize.X - 60), startPos.Y.Scale, math.clamp(startPos.Y.Offset + delta.Y, 0, Config.screenSize.Y - 180))
-        end
-    end)
-end
+
 
 -- Main UI
 local mainWidth = Config.isMobile and 380 or 480
