@@ -1135,7 +1135,7 @@ logoEmoji.ZIndex = 4
 
 local titleLbl = Instance.new("TextLabel", header)
 titleLbl.Size = UDim2.new(1, -120, 1, 0)
-titleLbl.Position = UDim2.new(0, 54, 0, 0)
+titleLbl.Position = UDim2.new(0, 40, 0, 0)
 titleLbl.BackgroundTransparency = 1
 titleLbl.Text = "spear duels - by spears left nut"
 titleLbl.TextColor3 = Colors.WHITE
@@ -1146,7 +1146,7 @@ titleLbl.ZIndex = 4
 
 local versionLbl = Instance.new("TextLabel", header)
 versionLbl.Size = UDim2.new(0, 40, 0, 16)
-versionLbl.Position = UDim2.new(0, 54, 0.5, 6)
+versionLbl.Position = UDim2.new(0, 40, 0.5, 6)
 versionLbl.BackgroundTransparency = 1
 versionLbl.Text = "dev version"
 versionLbl.TextColor3 = Colors.DIM
