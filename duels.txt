@@ -726,6 +726,10 @@ local function updateSideButtons()
         sb.Carry.BackgroundColor3 = State.speedToggled and Colors.SW_ON or Colors.SW_OFF
         sb.Carry.TextColor3 = State.speedToggled and Colors.BG or Colors.TEXT_DIM
     end
+    if sb.AutoBat then
+        sb.AutoBat.BackgroundColor3 = State.autoBatToggled and Colors.SW_ON or Colors.SW_OFF
+        sb.AutoBat.TextColor3 = State.autoBatToggled and Colors.BG or Colors.TEXT_DIM
+    end
 end
 
 local function startAutoLeft()
@@ -1045,7 +1049,7 @@ toggleStroke.Thickness = 1
 -- Side Buttons
 Objects.sideButtonsFrame = Instance.new("Frame")
 Objects.sideButtonsFrame.Name = "SideButtons"
-Objects.sideButtonsFrame.Size = UDim2.new(0, 52, 0, 180)
+Objects.sideButtonsFrame.Size = UDim2.new(0, 52, 0, 220)
 Objects.sideButtonsFrame.Position = UDim2.new(1, -62, 0.5, -90)
 Objects.sideButtonsFrame.BackgroundColor3 = Colors.CARD
 Objects.sideButtonsFrame.BorderSizePixel = 0
@@ -1083,6 +1087,7 @@ Refs.SideButtons.AutoLeft = createSideButton("AutoLeft", "◀", 1)
 Refs.SideButtons.AutoRight = createSideButton("AutoRight", "▶", 2)
 Refs.SideButtons.Float = createSideButton("Float", "💨", 3)
 Refs.SideButtons.Carry = createSideButton("Carry", "⚡", 4)
+Refs.SideButtons.AutoBat = createSideButton("AutoBat", "🗡️", 5)
 
 Refs.SideButtons.AutoLeft.MouseButton1Click:Connect(function()
     State.AutoLeftEnabled = not State.AutoLeftEnabled
@@ -1117,7 +1122,16 @@ Refs.SideButtons.Carry.MouseButton1Click:Connect(function()
     end
     updateSideButtons()
 end)
-
+Refs.SideButtons.AutoBat.MouseButton1Click:Connect(function()
+    State.autoBatToggled = not State.autoBatToggled
+    local sw = Refs.Switches.Bat
+    if sw then
+        TweenService:Create(sw.bg, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {BackgroundColor3 = State.autoBatToggled and Colors.SW_ON or Colors.SW_OFF}):Play()
+        TweenService:Create(sw.circle, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Position = State.autoBatToggled and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)}):Play()
+        TweenService:Create(sw.circle, TweenInfo.new(0.2), {BackgroundColor3 = State.autoBatToggled and Colors.BG or Colors.ACCENT2}):Play()
+    end
+    updateSideButtons()
+end)
 
 
 -- Main UI
