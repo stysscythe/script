@@ -710,7 +710,7 @@ local function updateSideButtons()
 end
 
 local function startAutoLeft()
-    if  Objects.autoLeftConnection then Objects.autoLeftConnection:Disconnect() end
+    if Objects.autoLeftConnection then Objects.autoLeftConnection:Disconnect() end
     State.autoLeftPhase = 1
     Objects.autoLeftConnection = RunService.Heartbeat:Connect(function()
         if not State.AutoLeftEnabled then return end
@@ -724,10 +724,6 @@ local function startAutoLeft()
             local tgt = Vector3.new(Positions.L1.X, h.Position.Y, Positions.L1.Z)
             if (tgt - h.Position).Magnitude < 1 then
                 State.autoLeftPhase = 2
-                local d = (Positions.L2 - h.Position)
-                local mv = Vector3.new(d.X, 0, d.Z).Unit
-                hum:Move(mv, false)
-                h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
                 return
             end
             local d = (Positions.L1 - h.Position)
@@ -737,15 +733,28 @@ local function startAutoLeft()
         elseif State.autoLeftPhase == 2 then
             local tgt = Vector3.new(Positions.L2.X, h.Position.Y, Positions.L2.Z)
             if (tgt - h.Position).Magnitude < 1 then
-                faceSouth()
-                State.autoLeftPhase = 1
-                local d = (Positions.L1 - h.Position)
-                local mv = Vector3.new(d.X, 0, d.Z).Unit
-                hum:Move(mv, false)
-                h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
+                State.autoLeftPhase = 3
                 return
             end
             local d = (Positions.L2 - h.Position)
+            local mv = Vector3.new(d.X, 0, d.Z).Unit
+            hum:Move(mv, false)
+            h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
+        elseif State.autoLeftPhase == 3 then
+            local tgt = Vector3.new(Positions.L1.X, h.Position.Y, Positions.L1.Z)
+            if (tgt - h.Position).Magnitude < 1 then
+                hum:Move(Vector3.zero, false)
+                h.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                State.AutoLeftEnabled = false
+                Enabled.AutoLeftEnabled = false
+                if Objects.autoLeftConnection then Objects.autoLeftConnection:Disconnect() Objects.autoLeftConnection = nil end
+                State.autoLeftPhase = 1
+                if Refs.VisualSetters.AutoLeftEnabled then Refs.VisualSetters.AutoLeftEnabled(false) end
+                updateSideButtons()
+                faceSouth()
+                return
+            end
+            local d = (Positions.L1 - h.Position)
             local mv = Vector3.new(d.X, 0, d.Z).Unit
             hum:Move(mv, false)
             h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
@@ -778,10 +787,6 @@ local function startAutoRight()
             local tgt = Vector3.new(Positions.R1.X, h.Position.Y, Positions.R1.Z)
             if (tgt - h.Position).Magnitude < 1 then
                 State.autoRightPhase = 2
-                local d = (Positions.R2 - h.Position)
-                local mv = Vector3.new(d.X, 0, d.Z).Unit
-                hum:Move(mv, false)
-                h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
                 return
             end
             local d = (Positions.R1 - h.Position)
@@ -791,15 +796,28 @@ local function startAutoRight()
         elseif State.autoRightPhase == 2 then
             local tgt = Vector3.new(Positions.R2.X, h.Position.Y, Positions.R2.Z)
             if (tgt - h.Position).Magnitude < 1 then
-                faceNorth()
-                State.autoRightPhase = 1
-                local d = (Positions.R1 - h.Position)
-                local mv = Vector3.new(d.X, 0, d.Z).Unit
-                hum:Move(mv, false)
-                h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
+                State.autoRightPhase = 3
                 return
             end
             local d = (Positions.R2 - h.Position)
+            local mv = Vector3.new(d.X, 0, d.Z).Unit
+            hum:Move(mv, false)
+            h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
+        elseif State.autoRightPhase == 3 then
+            local tgt = Vector3.new(Positions.R1.X, h.Position.Y, Positions.R1.Z)
+            if (tgt - h.Position).Magnitude < 1 then
+                hum:Move(Vector3.zero, false)
+                h.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                State.AutoRightEnabled = false
+                Enabled.AutoRightEnabled = false
+                if Objects.autoRightConnection then Objects.autoRightConnection:Disconnect() Objects.autoRightConnection = nil end
+                State.autoRightPhase = 1
+                if Refs.VisualSetters.AutoRightEnabled then Refs.VisualSetters.AutoRightEnabled(false) end
+                updateSideButtons()
+                faceNorth()
+                return
+            end
+            local d = (Positions.R1 - h.Position)
             local mv = Vector3.new(d.X, 0, d.Z).Unit
             hum:Move(mv, false)
             h.AssemblyLinearVelocity = Vector3.new(mv.X * spd, h.AssemblyLinearVelocity.Y, mv.Z * spd)
