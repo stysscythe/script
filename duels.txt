@@ -46,7 +46,9 @@ local State = {
     cachedMass = 0,
     lastMassUpdate = 0,
     waitingForKey = nil,
+    infiniteJumpEnabled = false
 }
+local JumpData = {lastJumpTime = 0}
 
 local Keybinds = {
     AutoBat = Enum.KeyCode.E,
@@ -378,6 +380,35 @@ local function stopInfiniteJump()
     if Objects.galaxyVectorForce then Objects.galaxyVectorForce:Destroy() Objects.galaxyVectorForce = nil end
     if Objects.galaxyAttachment then Objects.galaxyAttachment:Destroy() Objects.galaxyAttachment = nil end
     adjustGalaxyJump()
+end
+
+local function setInfiniteJump(enabled)
+    State.infiniteJumpEnabled = enabled
+    Enabled.InfiniteJump = enabled
+    
+    if Refs.Connections.infiniteJump then 
+        Refs.Connections.infiniteJump:Disconnect()
+        Refs.Connections.infiniteJump = nil 
+    end
+    
+    if not enabled then return end
+
+    Refs.Connections.infiniteJump = RunService.Heartbeat:Connect(function()
+        if not UserInputService:IsKeyDown(Enum.KeyCode.Space) then return end
+        local now = tick()
+        if now - JumpData.lastJumpTime < 0.1 then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChild("Humanoid")
+        if not hrp or not hum or hum.Health <= 0 then return end
+        JumpData.lastJumpTime = now
+        hrp.AssemblyLinearVelocity = Vector3.new(
+            hrp.AssemblyLinearVelocity.X,
+            55,
+            hrp.AssemblyLinearVelocity.Z
+        )
+    end)
 end
 
 RunService.Heartbeat:Connect(function()
@@ -1524,7 +1555,7 @@ local function O() o = o + 1 return o end
 makeSectionLbl("Features", O())
 makeRow("", "Auto Steal", "AutoSteal", O(), function(s) if s then startAutoSteal() else stopAutoSteal() end end)
 makeRow("", "Anti Ragdoll", "AntiRagdoll", O(), function(s) if s then startAntiRagdoll() else stopAntiRagdoll() end end)
-makeRow("InfiniteJump", "Infinite Jump", "InfiniteJump", O(), function(s) if s then startInfiniteJump() else stopInfiniteJump() end end)
+makeRow("InfiniteJump", "Infinite Jump", "InfiniteJump", O(), function(s) setInfiniteJump(s) end)
 makeRow("", "Shiny Graphics", "ShinyGraphics", O(), function(s) if s then enableShinyGraphics() else disableShinyGraphics() end end)
 makeRow("", "Optimizer + XRay", "Optimizer", O(), function(s) if s then enableOptimizer() else disableOptimizer() end end)
 makeRow("", "Unwalk", "Unwalk", O(), function(s) if s then startUnwalk() else stopUnwalk() end end)
@@ -1809,7 +1840,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     if input.KeyCode == Keybinds.InfiniteJump then
         Enabled.InfiniteJump = not Enabled.InfiniteJump
         if Refs.VisualSetters.InfiniteJump then Refs.VisualSetters.InfiniteJump(Enabled.InfiniteJump) end
-        if Enabled.InfiniteJump then startInfiniteJump() else stopInfiniteJump() end
+        setInfiniteJump(Enabled.InfiniteJump)
     end
     if input.KeyCode == Keybinds.Float then
         State.floatEnabled = not State.floatEnabled
@@ -1849,7 +1880,7 @@ task.spawn(function()
     task.wait(2)
     if Enabled.AutoSteal and Refs.VisualSetters.AutoSteal then Refs.VisualSetters.AutoSteal(true) startAutoSteal() end
     if Enabled.AntiRagdoll and Refs.VisualSetters.AntiRagdoll then Refs.VisualSetters.AntiRagdoll(true) startAntiRagdoll() end
-    if Enabled.InfiniteJump and Refs.VisualSetters.InfiniteJump then Refs.VisualSetters.InfiniteJump(true) startInfiniteJump() end
+        if Enabled.InfiniteJump and Refs.VisualSetters.InfiniteJump then Refs.VisualSetters.InfiniteJump(true) setInfiniteJump(true) end
     if Enabled.Unwalk and Refs.VisualSetters.Unwalk then Refs.VisualSetters.Unwalk(true) startUnwalk() end
     if Enabled.Optimizer and Refs.VisualSetters.Optimizer then Refs.VisualSetters.Optimizer(true) enableOptimizer() end
     if Enabled.ShinyGraphics and Refs.VisualSetters.ShinyGraphics then Refs.VisualSetters.ShinyGraphics(true) enableShinyGraphics() end
