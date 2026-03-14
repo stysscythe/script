@@ -952,10 +952,10 @@ local function playTick()
 end
 
 Objects.gui = Instance.new("ScreenGui")
-Objects.gui.Name = "SpearDuelsGUI"
+Objects.gui.Name = "SpearDuelsGui"
 Objects.gui.ResetOnSpawn = false
 Objects.gui.DisplayOrder = 10
-Objects.gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+Objects.gui.Parent = game.CoreGui
 
 -- Mobile Toggle Button
 Objects.mobileToggleBtn = Instance.new("TextButton")
@@ -975,25 +975,6 @@ local toggleStroke = Instance.new("UIStroke", Objects.mobileToggleBtn)
 toggleStroke.Color = Colors.STROKE
 toggleStroke.Thickness = 1
 
-do
-    local dragging, dragStart, startPos = false, nil, nil
-    Objects.mobileToggleBtn.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = Objects.mobileToggleBtn.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
-            end)
-        end
-    end)
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
-            Objects.mobileToggleBtn.Position = UDim2.new(startPos.X.Scale, math.clamp(startPos.X.Offset + delta.X, 0, Config.screenSize.X - 50), startPos.Y.Scale, math.clamp(startPos.Y.Offset + delta.Y, 0, Config.screenSize.Y - 50))
-        end
-    end)
-end
 
 -- Side Buttons
 Objects.sideButtonsFrame = Instance.new("Frame")
@@ -1034,7 +1015,7 @@ end
 
 Refs.SideButtons.AutoLeft = createSideButton("AutoLeft", "◀", 1)
 Refs.SideButtons.AutoRight = createSideButton("AutoRight", "▶", 2)
-Refs.SideButtons.Float = createSideButton("Float", "↑", 3)
+Refs.SideButtons.Float = createSideButton("Float", "💨", 3)
 Refs.SideButtons.Carry = createSideButton("Carry", "⚡", 4)
 
 Refs.SideButtons.AutoLeft.MouseButton1Click:Connect(function()
@@ -1148,7 +1129,7 @@ local logoEmoji = Instance.new("TextLabel", header)
 logoEmoji.Size = UDim2.new(0, 40, 0, 40)
 logoEmoji.Position = UDim2.new(0, 14, 0.5, -20)
 logoEmoji.BackgroundTransparency = 1
-logoEmoji.Text = "⚔️"
+logoEmoji.Text = ""
 logoEmoji.TextSize = 24
 logoEmoji.ZIndex = 4
 
@@ -1156,7 +1137,7 @@ local titleLbl = Instance.new("TextLabel", header)
 titleLbl.Size = UDim2.new(1, -120, 1, 0)
 titleLbl.Position = UDim2.new(0, 54, 0, 0)
 titleLbl.BackgroundTransparency = 1
-titleLbl.Text = "SPEAR DUELS"
+titleLbl.Text = "spear duels - by spears left nut"
 titleLbl.TextColor3 = Colors.WHITE
 titleLbl.Font = Enum.Font.GothamBlack
 titleLbl.TextSize = Config.isMobile and 18 or 22
@@ -1167,7 +1148,7 @@ local versionLbl = Instance.new("TextLabel", header)
 versionLbl.Size = UDim2.new(0, 40, 0, 16)
 versionLbl.Position = UDim2.new(0, 54, 0.5, 6)
 versionLbl.BackgroundTransparency = 1
-versionLbl.Text = "v5.0"
+versionLbl.Text = "dev version"
 versionLbl.TextColor3 = Colors.DIM
 versionLbl.Font = Enum.Font.GothamMedium
 versionLbl.TextSize = 10
