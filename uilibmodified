@@ -335,14 +335,9 @@ function UILibrary:CreateWindow(config)
     -- Also drag shadow container with window
     local originalDrag = MakeDraggable
     MakeDraggable(mainWindow, header)
-    
-    -- Sync shadow position with main window
-    mainWindow:GetPropertyChangedSignal("Position"):Connect(function()
-        shadowContainer.Position = mainWindow.Position
-    end)
-    
+        
     -- Title
-    local titleLabel = Instance.new("TextLabel")
+    local titleLabel = Instance.new("TextLabel")                  
     titleLabel.Name = "Title"
     titleLabel.Position = UDim2.new(0, 20, 0, 0)
     titleLabel.Size = UDim2.new(1, -120, 1, 0)
@@ -430,7 +425,6 @@ function UILibrary:CreateWindow(config)
     
     -- Animation
     CreateTween(mainWindow, {Size = windowSize}, 0.5, Enum.EasingStyle.Back):Play()
-    CreateTween(shadowContainer, {Size = windowSize}, 0.5, Enum.EasingStyle.Back):Play()
     
     -- Button Functionality
     local isMinimized = false
@@ -440,11 +434,9 @@ function UILibrary:CreateWindow(config)
         isMinimized = not isMinimized
         if isMinimized then
             CreateTween(mainWindow, {Size = UDim2.new(originalSize.X.Scale, originalSize.X.Offset, 0, 50)}, 0.3):Play()
-            CreateTween(shadowContainer, {Size = UDim2.new(originalSize.X.Scale, originalSize.X.Offset, 0, 50)}, 0.3):Play()
             minimizeBtn.Text = "□"
         else
             CreateTween(mainWindow, {Size = originalSize}, 0.3, Enum.EasingStyle.Back):Play()
-            CreateTween(shadowContainer, {Size = originalSize}, 0.3, Enum.EasingStyle.Back):Play()
             minimizeBtn.Text = "−"
         end
     end)
@@ -472,7 +464,6 @@ function UILibrary:CreateWindow(config)
         CurrentTab = nil,
         ScreenGui = screenGui,
         MainWindow = mainWindow,
-        ShadowContainer = shadowContainer
     }
     
     -- ═══════════════════════════════════════════════════════════
@@ -1549,7 +1540,6 @@ function UILibrary:CreateWindow(config)
     
     function Window:Toggle()
         mainWindow.Visible = not mainWindow.Visible
-        shadowContainer.Visible = mainWindow.Visible
     end
     
     return Window
