@@ -1,0 +1,550 @@
+-- i changed this after 4 years wow, im so gay and hot and i beat my meat to furrys too 
+
+-- ╔══════════════════════════════════════════════════════════╗
+-- ║           UNIVERSAL AIMBOT - MULTI-METHOD v1.0           ║
+-- ║     Raycast • Distance • Smooth • Prediction • FOV       ║
+-- ╚══════════════════════════════════════════════════════════╝
+
+local Aimbot = {}
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Camera = Workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+-- ═══════════════════════════════════════════════════════════
+-- CONFIGURATION
+-- ═══════════════════════════════════════════════════════════
+
+Aimbot.Settings = {
+    -- General
+    Enabled = false,
+    TeamCheck = true,
+    AliveCheck = true,
+    WallCheck = true,
+    
+    -- Targeting
+    TargetPart = "Head", -- "Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"
+    PrioritizeMode = "Distance", -- "Distance", "Health", "Threat", "Crosshair"
+    
+    -- FOV (Field of View)
+    UseFOV = true,
+    FOVRadius = 200,
+    FOVVisible = true,
+    FOVColor = Color3.fromRGB(255, 255, 255),
+    FOVTransparency = 0.5,
+    FOVFilled = false,
+    
+    -- Aiming Method
+    AimMethod = "Camera", -- "Camera", "Mouse", "CFrame"
+    SmoothAim = true,
+    Smoothness = 0.15, -- Lower = Smoother (0.1 - 1)
+    
+    -- Prediction (for moving targets)
+    UsePrediction = false,
+    PredictionAmount = 0.12,
+    
+    -- Sticky Target
+    StickyAim = false, -- Locks onto one target until they die/leave FOV
+    
+    -- Keybinds
+    AimbotKey = Enum.UserInputType.MouseButton2, -- Right Click
+    ToggleKey = Enum.KeyCode.B,
+    
+    -- Advanced
+    IgnoreList = {}, -- Player names to ignore
+    AutoShoot = false,
+    ShootDelay = 0.1,
+}
+
+-- ═══════════════════════════════════════════════════════════
+-- VARIABLES
+-- ═══════════════════════════════════════════════════════════
+
+local CurrentTarget = nil
+local FOVCircle = nil
+local AimbotConnection = nil
+local IsAiming = false
+local LastShootTime = 0
+
+-- ═══════════════════════════════════════════════════════════
+-- FOV CIRCLE
+-- ═══════════════════════════════════════════════════════════
+
+local function CreateFOVCircle()
+    if FOVCircle then
+        FOVCircle:Remove()
+    end
+    
+    FOVCircle = Drawing.new("Circle")
+    FOVCircle.Thickness = 2
+    FOVCircle.NumSides = 64
+    FOVCircle.Radius = Aimbot.Settings.FOVRadius
+    FOVCircle.Filled = Aimbot.Settings.FOVFilled
+    FOVCircle.Color = Aimbot.Settings.FOVColor
+    FOVCircle.Transparency = Aimbot.Settings.FOVTransparency
+    FOVCircle.Visible = Aimbot.Settings.FOVVisible and Aimbot.Settings.Enabled
+    FOVCircle.ZIndex = 2
+end
+
+local function UpdateFOVCircle()
+    if FOVCircle then
+        local ViewportSize = Camera.ViewportSize
+        FOVCircle.Position = Vector2.new(ViewportSize.X / 2, ViewportSize.Y / 2)
+        FOVCircle.Radius = Aimbot.Settings.FOVRadius
+        FOVCircle.Color = Aimbot.Settings.FOVColor
+        FOVCircle.Transparency = Aimbot.Settings.FOVTransparency
+        FOVCircle.Filled = Aimbot.Settings.FOVFilled
+        FOVCircle.Visible = Aimbot.Settings.FOVVisible and Aimbot.Settings.Enabled
+    end
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- UTILITY FUNCTIONS
+-- ═══════════════════════════════════════════════════════════
+
+local function IsAlive(player)
+    if not player then return false end
+    local character = player.Character
+    if not character then return false end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    
+    return humanoid and rootPart and humanoid.Health > 0
+end
+
+local function IsTeamMate(player)
+    if not Aimbot.Settings.TeamCheck then return false end
+    if not player.Team or not LocalPlayer.Team then return false end
+    return player.Team == LocalPlayer.Team
+end
+
+local function IsInIgnoreList(player)
+    for _, name in ipairs(Aimbot.Settings.IgnoreList) do
+        if player.Name == name or player.DisplayName == name then
+            return true
+        end
+    end
+    return false
+end
+
+local function GetDistanceFromMouse(position)
+    local ViewportPoint, OnScreen = Camera:WorldToViewportPoint(position)
+    if not OnScreen then return math.huge end
+    
+    local MousePos = UserInputService:GetMouseLocation()
+    local Distance = (Vector2.new(ViewportPoint.X, ViewportPoint.Y) - MousePos).Magnitude
+    
+    return Distance
+end
+
+local function IsInFOV(position)
+    if not Aimbot.Settings.UseFOV then return true end
+    return GetDistanceFromMouse(position) <= Aimbot.Settings.FOVRadius
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- WALLCHECK (RAYCAST METHOD)
+-- ═══════════════════════════════════════════════════════════
+
+local function HasLineOfSight(targetPosition)
+    if not Aimbot.Settings.WallCheck then return true end
+    
+    local character = LocalPlayer.Character
+    if not character then return false end
+    
+    local origin = Camera.CFrame.Position
+    local direction = (targetPosition - origin).Unit * (targetPosition - origin).Magnitude
+    
+    local rayParams = RaycastParams.new()
+    rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+    rayParams.FilterDescendantsInstances = {character, Camera}
+    rayParams.IgnoreWater = true
+    
+    local result = Workspace:Raycast(origin, direction, rayParams)
+    
+    if result then
+        local hit = result.Instance
+        if hit then
+            -- Check if the hit is part of the target
+            local targetPlayer = Players:GetPlayerFromCharacter(hit.Parent)
+            if targetPlayer then
+                return true
+            end
+            -- Check if it's a child of the target (for accessories, etc.)
+            if hit.Parent and hit.Parent.Parent then
+                targetPlayer = Players:GetPlayerFromCharacter(hit.Parent.Parent)
+                if targetPlayer then
+                    return true
+                end
+            end
+            return false
+        end
+    end
+    
+    return true
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- PREDICTION (VELOCITY-BASED)
+-- ═══════════════════════════════════════════════════════════
+
+local function PredictPosition(targetPart)
+    if not Aimbot.Settings.UsePrediction then
+        return targetPart.Position
+    end
+    
+    local velocity = targetPart.AssemblyVelocity
+    local predictedPosition = targetPart.Position + (velocity * Aimbot.Settings.PredictionAmount)
+    
+    return predictedPosition
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- TARGET SELECTION METHODS
+-- ═══════════════════════════════════════════════════════════
+
+local function GetClosestByDistance()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and 
+           not IsTeamMate(player) and 
+           not IsInIgnoreList(player) and
+           IsAlive(player) then
+            
+            local character = player.Character
+            local targetPart = character:FindFirstChild(Aimbot.Settings.TargetPart)
+            
+            if targetPart then
+                local predictedPos = PredictPosition(targetPart)
+                
+                if IsInFOV(predictedPos) and HasLineOfSight(predictedPos) then
+                    local distance = (Camera.CFrame.Position - predictedPos).Magnitude
+                    
+                    if distance < shortestDistance then
+                        shortestDistance = distance
+                        closestPlayer = player
+                    end
+                end
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+local function GetClosestByCrosshair()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and 
+           not IsTeamMate(player) and 
+           not IsInIgnoreList(player) and
+           IsAlive(player) then
+            
+            local character = player.Character
+            local targetPart = character:FindFirstChild(Aimbot.Settings.TargetPart)
+            
+            if targetPart then
+                local predictedPos = PredictPosition(targetPart)
+                
+                if IsInFOV(predictedPos) and HasLineOfSight(predictedPos) then
+                    local mouseDistance = GetDistanceFromMouse(predictedPos)
+                    
+                    if mouseDistance < shortestDistance then
+                        shortestDistance = mouseDistance
+                        closestPlayer = player
+                    end
+                end
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+local function GetLowestHealth()
+    local targetPlayer = nil
+    local lowestHealth = math.huge
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and 
+           not IsTeamMate(player) and 
+           not IsInIgnoreList(player) and
+           IsAlive(player) then
+            
+            local character = player.Character
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            local targetPart = character:FindFirstChild(Aimbot.Settings.TargetPart)
+            
+            if humanoid and targetPart then
+                local predictedPos = PredictPosition(targetPart)
+                
+                if IsInFOV(predictedPos) and HasLineOfSight(predictedPos) then
+                    if humanoid.Health < lowestHealth then
+                        lowestHealth = humanoid.Health
+                        targetPlayer = player
+                    end
+                end
+            end
+        end
+    end
+    
+    return targetPlayer
+end
+
+local function GetTarget()
+    if Aimbot.Settings.StickyAim and CurrentTarget and IsAlive(CurrentTarget) then
+        local character = CurrentTarget.Character
+        if character then
+            local targetPart = character:FindFirstChild(Aimbot.Settings.TargetPart)
+            if targetPart then
+                local predictedPos = PredictPosition(targetPart)
+                if IsInFOV(predictedPos) and HasLineOfSight(predictedPos) then
+                    return CurrentTarget
+                end
+            end
+        end
+    end
+    
+    local mode = Aimbot.Settings.PrioritizeMode
+    
+    if mode == "Distance" then
+        return GetClosestByDistance()
+    elseif mode == "Health" then
+        return GetLowestHealth()
+    elseif mode == "Crosshair" then
+        return GetClosestByCrosshair()
+    else
+        return GetClosestByDistance()
+    end
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- AIMING METHODS
+-- ═══════════════════════════════════════════════════════════
+
+-- Method 1: Camera Manipulation (Most Common)
+local function AimAtTargetCamera(targetPosition)
+    if Aimbot.Settings.SmoothAim then
+        local currentCFrame = Camera.CFrame
+        local targetCFrame = CFrame.new(currentCFrame.Position, targetPosition)
+        
+        Camera.CFrame = currentCFrame:Lerp(targetCFrame, Aimbot.Settings.Smoothness)
+    else
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPosition)
+    end
+end
+
+-- Method 2: Mouse Movement Simulation (Bypasses some anti-cheats)
+local function AimAtTargetMouse(targetPosition)
+    local ViewportPoint = Camera:WorldToViewportPoint(targetPosition)
+    local MousePos = UserInputService:GetMouseLocation()
+    
+    local deltaX = ViewportPoint.X - MousePos.X
+    local deltaY = ViewportPoint.Y - MousePos.Y
+    
+    if Aimbot.Settings.SmoothAim then
+        deltaX = deltaX * Aimbot.Settings.Smoothness
+        deltaY = deltaY * Aimbot.Settings.Smoothness
+    end
+    
+    mousemoverel(deltaX, deltaY)
+end
+
+-- Method 3: CFrame Manipulation (For tools/guns)
+local function AimAtTargetCFrame(targetPosition)
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local tool = character:FindFirstChildOfClass("Tool")
+    if not tool then return end
+    
+    local handle = tool:FindFirstChild("Handle")
+    if not handle then return end
+    
+    local currentCFrame = handle.CFrame
+    local targetCFrame = CFrame.new(currentCFrame.Position, targetPosition)
+    
+    if Aimbot.Settings.SmoothAim then
+        handle.CFrame = currentCFrame:Lerp(targetCFrame, Aimbot.Settings.Smoothness)
+    else
+        handle.CFrame = targetCFrame
+    end
+end
+
+local function AimAtTarget(targetPosition)
+    local method = Aimbot.Settings.AimMethod
+    
+    if method == "Camera" then
+        AimAtTargetCamera(targetPosition)
+    elseif method == "Mouse" then
+        AimAtTargetMouse(targetPosition)
+    elseif method == "CFrame" then
+        AimAtTargetCFrame(targetPosition)
+    end
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- AUTO SHOOT
+-- ═══════════════════════════════════════════════════════════
+
+local function AutoShoot()
+    if not Aimbot.Settings.AutoShoot then return end
+    
+    local currentTime = tick()
+    if currentTime - LastShootTime < Aimbot.Settings.ShootDelay then return end
+    
+    -- Method 1: Mouse Click
+    mouse1click()
+    
+    -- Method 2: Virtual Input (uncomment if mouse1click doesn't work)
+    -- game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
+    -- wait(0.01)
+    -- game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
+    
+    LastShootTime = currentTime
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- MAIN AIMBOT LOOP
+-- ═══════════════════════════════════════════════════════════
+
+local function AimbotLoop()
+    if not Aimbot.Settings.Enabled then return end
+    if not IsAiming then return end
+    
+    local target = GetTarget()
+    
+    if target then
+        CurrentTarget = target
+        
+        local character = target.Character
+        if character then
+            local targetPart = character:FindFirstChild(Aimbot.Settings.TargetPart)
+            
+            if targetPart then
+                local predictedPos = PredictPosition(targetPart)
+                AimAtTarget(predictedPos)
+                
+                AutoShoot()
+            end
+        end
+    else
+        if not Aimbot.Settings.StickyAim then
+            CurrentTarget = nil
+        end
+    end
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- INPUT HANDLING
+-- ═══════════════════════════════════════════════════════════
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    -- Toggle Aimbot
+    if input.KeyCode == Aimbot.Settings.ToggleKey then
+        Aimbot.Settings.Enabled = not Aimbot.Settings.Enabled
+        
+        if FOVCircle then
+            FOVCircle.Visible = Aimbot.Settings.FOVVisible and Aimbot.Settings.Enabled
+        end
+        
+        print("[AIMBOT] " .. (Aimbot.Settings.Enabled and "Enabled" or "Disabled"))
+    end
+    
+    -- Aim Key Hold
+    if input.UserInputType == Aimbot.Settings.AimbotKey then
+        IsAiming = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Aimbot.Settings.AimbotKey then
+        IsAiming = false
+        if not Aimbot.Settings.StickyAim then
+            CurrentTarget = nil
+        end
+    end
+end)
+
+-- ═══════════════════════════════════════════════════════════
+-- INITIALIZATION
+-- ═══════════════════════════════════════════════════════════
+
+function Aimbot:Initialize()
+    CreateFOVCircle()
+    
+    -- Update FOV Circle position
+    RunService.RenderStepped:Connect(function()
+        UpdateFOVCircle()
+        AimbotLoop()
+    end)
+    
+    print("[AIMBOT] Initialized Successfully!")
+    print("[AIMBOT] Toggle Key: " .. Aimbot.Settings.ToggleKey.Name)
+    print("[AIMBOT] Aim Key: Hold Right Click")
+end
+
+function Aimbot:Destroy()
+    if FOVCircle then
+        FOVCircle:Remove()
+    end
+    
+    if AimbotConnection then
+        AimbotConnection:Disconnect()
+    end
+    
+    print("[AIMBOT] Destroyed")
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- CONFIGURATION FUNCTIONS
+-- ═══════════════════════════════════════════════════════════
+
+function Aimbot:SetTargetPart(part)
+    Aimbot.Settings.TargetPart = part
+end
+
+function Aimbot:SetFOVRadius(radius)
+    Aimbot.Settings.FOVRadius = radius
+end
+
+function Aimbot:SetSmoothness(smoothness)
+    Aimbot.Settings.Smoothness = math.clamp(smoothness, 0.01, 1)
+end
+
+function Aimbot:SetPrediction(amount)
+    Aimbot.Settings.PredictionAmount = amount
+end
+
+function Aimbot:ToggleTeamCheck(enabled)
+    Aimbot.Settings.TeamCheck = enabled
+end
+
+function Aimbot:ToggleWallCheck(enabled)
+    Aimbot.Settings.WallCheck = enabled
+end
+
+function Aimbot:AddToIgnoreList(playerName)
+    table.insert(Aimbot.Settings.IgnoreList, playerName)
+end
+
+function Aimbot:ClearIgnoreList()
+    Aimbot.Settings.IgnoreList = {}
+end
+
+-- ═══════════════════════════════════════════════════════════
+-- START AIMBOT
+-- ═══════════════════════════════════════════════════════════
+
+Aimbot:Initialize()
+
+return Aimbot
