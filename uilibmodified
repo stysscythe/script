@@ -303,31 +303,6 @@ function UILibrary:CreateWindow(config)
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.Parent = game:GetService("CoreGui")
     
-    -- Shadow Container (Behind main window)
-    local shadowContainer = Instance.new("Frame")
-    shadowContainer.Name = "ShadowContainer"
-    shadowContainer.AnchorPoint = Vector2.new(0.5, 0.5)
-    shadowContainer.Position = windowPosition
-    shadowContainer.Size = UDim2.new(0, 0, 0, 0)
-    shadowContainer.BackgroundTransparency = 1
-    shadowContainer.ZIndex = 0
-    shadowContainer.Parent = screenGui
-    
-    -- Main Window Shadow
-    local mainShadow = Instance.new("ImageLabel")
-    mainShadow.Name = "MainShadow"
-    mainShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    mainShadow.Position = UDim2.new(0.5, 0, 0.5, 8)
-    mainShadow.Size = UDim2.new(1, 50, 1, 50)
-    mainShadow.BackgroundTransparency = 1
-    mainShadow.Image = "rbxassetid://6015897843"
-    mainShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    mainShadow.ImageTransparency = 0.3
-    mainShadow.ScaleType = Enum.ScaleType.Slice
-    mainShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-    mainShadow.ZIndex = 0
-    mainShadow.Parent = shadowContainer
-    
     -- Main Window
     local mainWindow = Instance.new("Frame")
     mainWindow.Name = "MainWindow"
